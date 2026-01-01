@@ -86,11 +86,14 @@ class Odds:
         if "spread" in odds_data:
             spread_val = odds_data.get("spread", 0)
             ps = odds_data.get("pointSpread", {})
+            details = odds_data.get("details", "")
+            favorite = details.split()[0] if details else ""
+            ps_american = ps.get("american", {}) if ps else {}
             spread = Spread(
-                favorite=odds_data.get("details", "").split()[0] if odds_data.get("details") else "",
+                favorite=favorite,
                 spread=abs(float(spread_val)) if spread_val else 0,
-                favorite_odds=ps.get("american", {}).get("favorite", {}).get("close", 0) if ps else 0,
-                underdog_odds=ps.get("american", {}).get("underdog", {}).get("close", 0) if ps else 0,
+                favorite_odds=ps_american.get("favorite", {}).get("close", 0),
+                underdog_odds=ps_american.get("underdog", {}).get("close", 0),
                 provider=provider,
             )
 
@@ -158,14 +161,16 @@ class Odds:
         results = []
         for odds in Odds.from_scoreboard(scoreboard):
             if odds.spread:
-                results.append({
-                    "event_id": odds.event_id,
-                    "home": odds.home_team,
-                    "away": odds.away_team,
-                    "favorite": odds.spread.favorite,
-                    "spread": odds.spread.spread,
-                    "provider": odds.spread.provider,
-                })
+                results.append(
+                    {
+                        "event_id": odds.event_id,
+                        "home": odds.home_team,
+                        "away": odds.away_team,
+                        "favorite": odds.spread.favorite,
+                        "spread": odds.spread.spread,
+                        "provider": odds.spread.provider,
+                    }
+                )
         return results
 
     @staticmethod
@@ -181,14 +186,16 @@ class Odds:
         results = []
         for odds in Odds.from_scoreboard(scoreboard):
             if odds.moneyline:
-                results.append({
-                    "event_id": odds.event_id,
-                    "home": odds.home_team,
-                    "away": odds.away_team,
-                    "home_odds": odds.moneyline.home_odds,
-                    "away_odds": odds.moneyline.away_odds,
-                    "provider": odds.moneyline.provider,
-                })
+                results.append(
+                    {
+                        "event_id": odds.event_id,
+                        "home": odds.home_team,
+                        "away": odds.away_team,
+                        "home_odds": odds.moneyline.home_odds,
+                        "away_odds": odds.moneyline.away_odds,
+                        "provider": odds.moneyline.provider,
+                    }
+                )
         return results
 
     @staticmethod
@@ -204,13 +211,15 @@ class Odds:
         results = []
         for odds in Odds.from_scoreboard(scoreboard):
             if odds.total:
-                results.append({
-                    "event_id": odds.event_id,
-                    "home": odds.home_team,
-                    "away": odds.away_team,
-                    "over_under": odds.total.over_under,
-                    "over_odds": odds.total.over_odds,
-                    "under_odds": odds.total.under_odds,
-                    "provider": odds.total.provider,
-                })
+                results.append(
+                    {
+                        "event_id": odds.event_id,
+                        "home": odds.home_team,
+                        "away": odds.away_team,
+                        "over_under": odds.total.over_under,
+                        "over_odds": odds.total.over_odds,
+                        "under_odds": odds.total.under_odds,
+                        "provider": odds.total.provider,
+                    }
+                )
         return results

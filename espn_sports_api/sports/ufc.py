@@ -20,7 +20,7 @@ class UFC(BaseSport):
         Returns:
             Rankings data.
         """
-        endpoint = f"{self._endpoint()}/rankings"
+        endpoint = f"{self._core_endpoint()}/rankings"
         if division:
             endpoint = f"{endpoint}/{division}"
         return self.client.get_core(endpoint)
@@ -35,7 +35,7 @@ class UFC(BaseSport):
             Events data.
         """
         params = {"limit": limit} if limit else None
-        return self.client.get_core(f"{self._endpoint()}/events", params)
+        return self.client.get_core(f"{self._core_endpoint()}/events", params)
 
     def event_details(self, event_id: str) -> dict[str, Any]:
         """Get UFC event details including fight card.
@@ -46,7 +46,7 @@ class UFC(BaseSport):
         Returns:
             Event details.
         """
-        return self.client.get_core(f"{self._endpoint()}/events/{event_id}")
+        return self.client.get_core(f"{self._core_endpoint()}/events/{event_id}")
 
     def fighter(self, fighter_id: str) -> dict[str, Any]:
         """Get fighter profile.

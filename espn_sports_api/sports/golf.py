@@ -46,7 +46,7 @@ class Golf(BaseSport):
         Returns:
             Rankings data.
         """
-        return self.client.get_core(f"{self._endpoint()}/rankings")
+        return self.client.get_core(f"{self._core_endpoint()}/rankings")
 
     def schedule(self, season: Optional[int] = None) -> dict[str, Any]:
         """Get tournament schedule.
@@ -58,7 +58,7 @@ class Golf(BaseSport):
             Schedule data.
         """
         params = {"season": season} if season else None
-        return self.client.get_core(f"{self._endpoint()}/events", params)
+        return self.client.get_core(f"{self._core_endpoint()}/events", params)
 
     def player(self, player_id: str) -> dict[str, Any]:
         """Get golfer profile.

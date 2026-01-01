@@ -21,8 +21,13 @@ class BaseSport:
         self._owns_client = client is None
 
     def _endpoint(self, path: str = "") -> str:
-        """Build endpoint path for this sport."""
+        """Build endpoint path for this sport (site API)."""
         base = f"{self.SPORT}/{self.LEAGUE}"
+        return f"{base}/{path}" if path else base
+
+    def _core_endpoint(self, path: str = "") -> str:
+        """Build endpoint path for core API (uses /leagues/ format)."""
+        base = f"{self.SPORT}/leagues/{self.LEAGUE}"
         return f"{base}/{path}" if path else base
 
     def scoreboard(
@@ -163,7 +168,7 @@ class BaseSport:
             Athletes data.
         """
         params = {"limit": limit} if limit else None
-        return self.client.get_core(f"{self._endpoint()}/athletes", params)
+        return self.client.get_core(f"{self._core_endpoint()}/athletes", params)
 
     def athlete(self, athlete_id: str) -> dict[str, Any]:
         """Get athlete details.
@@ -174,7 +179,7 @@ class BaseSport:
         Returns:
             Athlete data.
         """
-        return self.client.get_core(f"{self._endpoint()}/athletes/{athlete_id}")
+        return self.client.get_core(f"{self._core_endpoint()}/athletes/{athlete_id}")
 
     def athlete_stats(self, athlete_id: str) -> dict[str, Any]:
         """Get athlete statistics.
@@ -185,7 +190,7 @@ class BaseSport:
         Returns:
             Athlete stats.
         """
-        return self.client.get_web(f"{self._endpoint()}/athletes/{athlete_id}/stats")
+        return self.client.get_web(f"{self._core_endpoint()}/athletes/{athlete_id}/stats")
 
     def team_injuries(self, team_id: str) -> dict[str, Any]:
         """Get team injury report.
@@ -196,7 +201,7 @@ class BaseSport:
         Returns:
             Injury data.
         """
-        return self.client.get_core(f"{self._endpoint()}/teams/{team_id}/injuries")
+        return self.client.get_core(f"{self._core_endpoint()}/teams/{team_id}/injuries")
 
     def seasons(self, year: Optional[int] = None) -> dict[str, Any]:
         """Get season information.
@@ -207,7 +212,7 @@ class BaseSport:
         Returns:
             Season data.
         """
-        endpoint = f"{self._endpoint()}/seasons"
+        endpoint = f"{self._core_endpoint()}/seasons"
         if year:
             endpoint = f"{endpoint}/{year}"
         return self.client.get_core(endpoint)
@@ -256,7 +261,7 @@ class BaseSport:
             Venue data with capacity, location, indoor/outdoor.
         """
         params = {"limit": limit} if limit else None
-        return self.client.get_core(f"{self._endpoint()}/venues", params)
+        return self.client.get_core(f"{self._core_endpoint()}/venues", params)
 
     def franchises(self) -> dict[str, Any]:
         """Get franchise information.
@@ -264,7 +269,7 @@ class BaseSport:
         Returns:
             Franchise history and metadata.
         """
-        return self.client.get_core(f"{self._endpoint()}/franchises")
+        return self.client.get_core(f"{self._core_endpoint()}/franchises")
 
     def events(
         self,
@@ -285,7 +290,7 @@ class BaseSport:
             params["dates"] = dates
         if limit:
             params["limit"] = limit
-        return self.client.get_core(f"{self._endpoint()}/events", params or None)
+        return self.client.get_core(f"{self._core_endpoint()}/events", params or None)
 
     def playbyplay(self, event_id: str) -> dict[str, Any]:
         """Get play-by-play data for a game.
@@ -298,13 +303,24 @@ class BaseSport:
         """
         return self.client.get(f"{self._endpoint()}/summary", {"event": event_id})
 
+    def box_score(self, event_id: str) -> dict[str, Any]:
+        """Get box score for a game.
+
+        Args:
+            event_id: Event ID.
+
+        Returns:
+            Box score with team and player statistics.
+        """
+        return self.client.get(f"{self._endpoint()}/summary", {"event": event_id})
+
     def positions(self) -> dict[str, Any]:
         """Get all positions for this sport.
 
         Returns:
             Position data.
         """
-        return self.client.get_core(f"{self._endpoint()}/positions")
+        return self.client.get_core(f"{self._core_endpoint()}/positions")
 
     def leaders(self, category: Optional[str] = None) -> dict[str, Any]:
         """Get statistical leaders.
@@ -315,7 +331,7 @@ class BaseSport:
         Returns:
             Leaders data.
         """
-        endpoint = f"{self._endpoint()}/leaders"
+        endpoint = f"{self._core_endpoint()}/leaders"
         if category:
             endpoint = f"{endpoint}/{category}"
         return self.client.get_core(endpoint)

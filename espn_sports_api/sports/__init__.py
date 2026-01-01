@@ -1,17 +1,17 @@
 """Sport-specific API modules."""
 
-from .nfl import NFL
-from .nba import NBA
-from .mlb import MLB
-from .nhl import NHL
-from .soccer import Soccer
-from .ufc import UFC
-from .golf import Golf
-from .racing import Racing
-from .tennis import Tennis
-from .college import NCAAF, NCAAB, WomensNCAAB, CollegeBaseball
-from .wnba import WNBA
 from .cfl import CFL
+from .college import NCAAB, NCAAF, CollegeBaseball, WomensNCAAB
+from .golf import Golf
+from .mlb import MLB
+from .nba import NBA
+from .nfl import NFL
+from .nhl import NHL
+from .racing import Racing
+from .soccer import Soccer
+from .tennis import Tennis
+from .ufc import UFC
+from .wnba import WNBA
 from .xfl import XFL
 
 __all__ = [

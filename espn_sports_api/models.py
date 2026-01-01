@@ -154,7 +154,8 @@ class Athlete:
         birthplace = data.get("birthPlace", {})
         bp_str = ""
         if birthplace:
-            bp_str = f"{birthplace.get('city', '')}, {birthplace.get('state', birthplace.get('country', ''))}"
+            state_or_country = birthplace.get("state", birthplace.get("country", ""))
+            bp_str = f"{birthplace.get('city', '')}, {state_or_country}"
 
         return cls(
             id=str(data.get("id", "")),

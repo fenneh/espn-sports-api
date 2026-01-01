@@ -25,7 +25,7 @@ class NCAAF(BaseSport):
         Returns:
             Conference data.
         """
-        return self.client.get_core(f"{self._endpoint()}/groups")
+        return self.client.get_core(f"{self._core_endpoint()}/groups")
 
     def recruiting(self, year: Optional[int] = None) -> dict[str, Any]:
         """Get recruiting data.
@@ -37,7 +37,7 @@ class NCAAF(BaseSport):
             Recruiting data.
         """
         params = {"year": year} if year else None
-        return self.client.get_core(f"{self._endpoint()}/recruiting", params)
+        return self.client.get_core(f"{self._core_endpoint()}/recruiting", params)
 
 
 class NCAAB(BaseSport):
@@ -60,7 +60,7 @@ class NCAAB(BaseSport):
         Returns:
             Conference data.
         """
-        return self.client.get_core(f"{self._endpoint()}/groups")
+        return self.client.get_core(f"{self._core_endpoint()}/groups")
 
     def bracket(self, season: Optional[int] = None) -> dict[str, Any]:
         """Get NCAA tournament bracket.
@@ -85,7 +85,7 @@ class NCAAB(BaseSport):
             Week data.
         """
         return self.client.get_core(
-            f"{self._endpoint()}/seasons/{season}/types/{season_type}/weeks"
+            f"{self._core_endpoint()}/seasons/{season}/types/{season_type}/weeks"
         )
 
 
@@ -136,4 +136,4 @@ class CollegeBaseball(BaseSport):
         Returns:
             Conference data.
         """
-        return self.client.get_core(f"{self._endpoint()}/groups")
+        return self.client.get_core(f"{self._core_endpoint()}/groups")

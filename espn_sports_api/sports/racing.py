@@ -39,7 +39,7 @@ class Racing(BaseSport):
             Schedule data.
         """
         params = {"season": season} if season else None
-        return self.client.get_core(f"{self._endpoint()}/events", params)
+        return self.client.get_core(f"{self._core_endpoint()}/events", params)
 
     def standings(self, season: Optional[int] = None, **kwargs) -> dict[str, Any]:
         """Get driver/constructor standings.

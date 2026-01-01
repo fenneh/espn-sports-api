@@ -182,7 +182,7 @@ class Soccer(BaseSport):
         Returns:
             Transfer data.
         """
-        return self.client.get_core(f"{self._endpoint()}/transfers")
+        return self.client.get_core(f"{self._core_endpoint()}/transfers")
 
     @classmethod
     def available_leagues(cls) -> dict[str, str]:

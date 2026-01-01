@@ -197,6 +197,31 @@ matchups = league.matchups(week=1)
 standings = league.standings()
 ```
 
+## Caching
+
+Enable response caching for faster repeated requests:
+
+```python
+from espn_sports_api import ESPNClient, NFL
+from pathlib import Path
+
+# Memory cache with 5-minute TTL
+client = ESPNClient(cache_ttl=300)
+nfl = NFL(client=client)
+
+# First request hits the API
+scores = nfl.scoreboard()  # ~300ms
+
+# Second request uses cache
+scores = nfl.scoreboard()  # ~0ms
+
+# Clear cache when needed
+client.clear_cache()
+
+# Disk cache for persistence across sessions
+client = ESPNClient(cache_ttl=3600, cache_dir=Path("./cache"))
+```
+
 ## Context Manager
 
 ```python

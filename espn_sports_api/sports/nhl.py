@@ -21,7 +21,7 @@ class NHL(BaseSport):
             Draft data.
         """
         params = {"year": year} if year else None
-        return self.client.get_core(f"{self._endpoint()}/draft", params)
+        return self.client.get_core(f"{self._core_endpoint()}/draft", params)
 
     def leaders(self, category: Optional[str] = None) -> dict[str, Any]:
         """Get statistical leaders.
@@ -32,7 +32,7 @@ class NHL(BaseSport):
         Returns:
             Leaders data.
         """
-        endpoint = f"{self._endpoint()}/leaders"
+        endpoint = f"{self._core_endpoint()}/leaders"
         if category:
             endpoint = f"{endpoint}/{category}"
         return self.client.get_core(endpoint)
@@ -43,7 +43,7 @@ class NHL(BaseSport):
         Returns:
             Free agent data.
         """
-        return self.client.get_core(f"{self._endpoint()}/freeagents")
+        return self.client.get_core(f"{self._core_endpoint()}/freeagents")
 
     def transactions(self) -> dict[str, Any]:
         """Get transactions.
@@ -51,4 +51,4 @@ class NHL(BaseSport):
         Returns:
             Transaction data.
         """
-        return self.client.get_core(f"{self._endpoint()}/transactions")
+        return self.client.get_core(f"{self._core_endpoint()}/transactions")

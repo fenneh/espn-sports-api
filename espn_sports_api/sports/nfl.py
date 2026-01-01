@@ -21,7 +21,7 @@ class NFL(BaseSport):
             Draft data.
         """
         params = {"year": year} if year else None
-        return self.client.get_core(f"{self._endpoint()}/draft", params)
+        return self.client.get_core(f"{self._core_endpoint()}/draft", params)
 
     def leaders(self, category: Optional[str] = None) -> dict[str, Any]:
         """Get statistical leaders.
@@ -32,18 +32,19 @@ class NFL(BaseSport):
         Returns:
             Leaders data.
         """
-        endpoint = f"{self._endpoint()}/leaders"
+        endpoint = f"{self._core_endpoint()}/leaders"
         if category:
             endpoint = f"{endpoint}/{category}"
         return self.client.get_core(endpoint)
 
     def injuries(self) -> dict[str, Any]:
-        """Get injury reports.
+        """Get league-wide injury reports.
 
         Returns:
             Injury data.
         """
-        return self.client.get_core(f"{self._endpoint()}/injuries")
+        # Use site API for injuries as core API doesn't support league-wide
+        return self.client.get(f"{self._endpoint()}/injuries")
 
     def depth_charts(self, team_id: str) -> dict[str, Any]:
         """Get team depth chart.
@@ -54,4 +55,4 @@ class NFL(BaseSport):
         Returns:
             Depth chart data.
         """
-        return self.client.get_core(f"{self._endpoint()}/teams/{team_id}/depthcharts")
+        return self.client.get_core(f"{self._core_endpoint()}/teams/{team_id}/depthcharts")
