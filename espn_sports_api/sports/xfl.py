@@ -1,5 +1,7 @@
 """XFL API module."""
 
+from __future__ import annotations
+
 from .base import BaseSport
 
 

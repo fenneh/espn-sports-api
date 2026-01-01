@@ -1,5 +1,7 @@
 """Base class for sport-specific modules."""
 
+from __future__ import annotations
+
 from typing import Any, Optional
 
 from ..client import ESPNClient

@@ -1,5 +1,7 @@
 """NBA API module."""
 
+from __future__ import annotations
+
 from typing import Any, Optional
 
 from .base import BaseSport

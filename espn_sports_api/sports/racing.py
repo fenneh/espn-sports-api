@@ -1,5 +1,7 @@
 """Racing API module (F1, NASCAR, IndyCar)."""
 
+from __future__ import annotations
+
 from typing import Any, Optional
 
 from .base import BaseSport

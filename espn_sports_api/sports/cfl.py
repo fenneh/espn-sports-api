@@ -1,5 +1,7 @@
 """CFL (Canadian Football League) API module."""
 
+from __future__ import annotations
+
 from typing import Any
 
 from .base import BaseSport
