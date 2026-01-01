@@ -1,8 +1,19 @@
 # espn-sports-api
 
+[![PyPI](https://img.shields.io/pypi/v/espn-sports-api)](https://pypi.org/project/espn-sports-api/)
+[![CI](https://github.com/fenneh/espn-sports-api/actions/workflows/ci.yml/badge.svg)](https://github.com/fenneh/espn-sports-api/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/pypi/pyversions/espn-sports-api)](https://pypi.org/project/espn-sports-api/)
+[![License](https://img.shields.io/pypi/l/espn-sports-api)](https://github.com/fenneh/espn-sports-api/blob/main/LICENSE)
+
 Python client for ESPN's public API. No authentication required for most endpoints.
 
 ## Installation
+
+```bash
+uv add espn-sports-api
+```
+
+or with pip:
 
 ```bash
 pip install espn-sports-api
