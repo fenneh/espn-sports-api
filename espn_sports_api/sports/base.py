@@ -31,6 +31,9 @@ class BaseSport:
         limit: Optional[int] = None,
         groups: Optional[int] = None,
         calendar: bool = False,
+        season: Optional[int] = None,
+        seasontype: Optional[int] = None,
+        week: Optional[int] = None,
     ) -> dict[str, Any]:
         """Get scoreboard data.
 
@@ -39,6 +42,9 @@ class BaseSport:
             limit: Maximum number of results.
             groups: Conference/league group ID.
             calendar: Include calendar data.
+            season: Season year (e.g., 2025).
+            seasontype: Season type (1=preseason, 2=regular, 3=postseason, 4=offseason).
+            week: Week number (1-18 for NFL regular season).
 
         Returns:
             Scoreboard data.
@@ -52,6 +58,12 @@ class BaseSport:
             params["groups"] = groups
         if calendar:
             params["calendar"] = "true"
+        if season:
+            params["season"] = season
+        if seasontype:
+            params["seasontype"] = seasontype
+        if week:
+            params["week"] = week
         return self.client.get(f"{self._endpoint()}/scoreboard", params or None)
 
     def news(self, limit: Optional[int] = None) -> dict[str, Any]:
@@ -198,6 +210,114 @@ class BaseSport:
         endpoint = f"{self._endpoint()}/seasons"
         if year:
             endpoint = f"{endpoint}/{year}"
+        return self.client.get_core(endpoint)
+
+    def injuries(self) -> dict[str, Any]:
+        """Get league-wide injury report.
+
+        Returns:
+            All injuries across the league.
+        """
+        return self.client.get(f"{self._endpoint()}/injuries")
+
+    def transactions(self, limit: Optional[int] = None) -> dict[str, Any]:
+        """Get recent transactions (trades, signings, IR moves).
+
+        Args:
+            limit: Maximum number of results.
+
+        Returns:
+            Transaction data.
+        """
+        params = {"limit": limit} if limit else None
+        return self.client.get(f"{self._endpoint()}/transactions", params)
+
+    def statistics(self, category: Optional[str] = None) -> dict[str, Any]:
+        """Get league statistics and leaders.
+
+        Args:
+            category: Stat category to filter by.
+
+        Returns:
+            Statistics data.
+        """
+        endpoint = f"{self._endpoint()}/statistics"
+        if category:
+            endpoint = f"{endpoint}/{category}"
+        return self.client.get(endpoint)
+
+    def venues(self, limit: Optional[int] = None) -> dict[str, Any]:
+        """Get stadium/venue information.
+
+        Args:
+            limit: Maximum number of results.
+
+        Returns:
+            Venue data with capacity, location, indoor/outdoor.
+        """
+        params = {"limit": limit} if limit else None
+        return self.client.get_core(f"{self._endpoint()}/venues", params)
+
+    def franchises(self) -> dict[str, Any]:
+        """Get franchise information.
+
+        Returns:
+            Franchise history and metadata.
+        """
+        return self.client.get_core(f"{self._endpoint()}/franchises")
+
+    def events(
+        self,
+        dates: Optional[str] = None,
+        limit: Optional[int] = None,
+    ) -> dict[str, Any]:
+        """Get all events/games.
+
+        Args:
+            dates: Date filter (YYYYMMDD format).
+            limit: Maximum number of results.
+
+        Returns:
+            Events data.
+        """
+        params = {}
+        if dates:
+            params["dates"] = dates
+        if limit:
+            params["limit"] = limit
+        return self.client.get_core(f"{self._endpoint()}/events", params or None)
+
+    def playbyplay(self, event_id: str) -> dict[str, Any]:
+        """Get play-by-play data for a game.
+
+        Args:
+            event_id: Event ID.
+
+        Returns:
+            Play-by-play data with drives and plays.
+        """
+        return self.client.get(f"{self._endpoint()}/summary", {"event": event_id})
+
+    def positions(self) -> dict[str, Any]:
+        """Get all positions for this sport.
+
+        Returns:
+            Position data.
+        """
+        return self.client.get_core(f"{self._endpoint()}/positions")
+
+    def leaders(self, category: Optional[str] = None) -> dict[str, Any]:
+        """Get statistical leaders.
+
+        Args:
+            category: Stat category to filter by.
+
+        Returns:
+            Leaders data.
+        """
+        endpoint = f"{self._endpoint()}/leaders"
+        if category:
+            endpoint = f"{endpoint}/{category}"
         return self.client.get_core(endpoint)
 
     def close(self) -> None:

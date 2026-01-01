@@ -11,6 +11,8 @@ from .racing import Racing
 from .tennis import Tennis
 from .college import NCAAF, NCAAB, WomensNCAAB, CollegeBaseball
 from .wnba import WNBA
+from .cfl import CFL
+from .xfl import XFL
 
 __all__ = [
     "NFL",
@@ -27,4 +29,6 @@ __all__ = [
     "WomensNCAAB",
     "CollegeBaseball",
     "WNBA",
+    "CFL",
+    "XFL",
 ]

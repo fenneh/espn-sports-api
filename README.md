@@ -19,7 +19,7 @@ scores = nfl.scoreboard()
 
 # Get NBA team roster
 nba = NBA()
-roster = nba.team_roster("lal")  # Lakers
+roster = nba.team_roster("lal")
 
 # Get Premier League table
 epl = Soccer(league="epl")
@@ -28,13 +28,13 @@ table = epl.standings()
 
 ## Supported Sports
 
-| Sport | Class | Leagues/Tours |
-|-------|-------|---------------|
-| Football | `NFL`, `NCAAF` | NFL, College Football |
+| Sport | Class | Leagues |
+|-------|-------|---------|
+| Football | `NFL`, `NCAAF`, `CFL`, `XFL` | NFL, College Football, CFL, XFL |
 | Basketball | `NBA`, `NCAAB`, `WomensNCAAB`, `WNBA` | NBA, College Basketball, WNBA |
 | Baseball | `MLB`, `CollegeBaseball` | MLB, College Baseball |
 | Hockey | `NHL` | NHL |
-| Soccer | `Soccer` | EPL, La Liga, Bundesliga, Serie A, MLS, Champions League, etc. |
+| Soccer | `Soccer` | 90+ leagues worldwide |
 | MMA | `UFC` | UFC |
 | Golf | `Golf` | PGA, LPGA, European Tour |
 | Racing | `Racing` | F1, NASCAR, IndyCar |
@@ -45,41 +45,121 @@ table = epl.standings()
 All sport classes share these methods:
 
 ```python
-sport.scoreboard(dates="20240115")  # Get scores for specific date
-sport.scoreboard(groups=80)          # Filter by conference/group ID
-sport.teams()                        # Get all teams
-sport.team("NYY")                    # Get team by ID/abbreviation
-sport.team_roster("NYY")             # Get team roster
-sport.team_schedule("NYY")           # Get team schedule
-sport.team_injuries("NYY")           # Get injury report
-sport.standings()                    # Get standings
-sport.news()                         # Get news articles
-sport.event("401547417")             # Get game/event details
-sport.athlete("12345")               # Get athlete profile
-sport.athlete_stats("12345")         # Get athlete statistics
-sport.seasons(2024)                  # Get season information
+# Scoreboard with filtering
+sport.scoreboard(dates="20240115")       # By date
+sport.scoreboard(season=2024, week=10)   # By season/week
+sport.scoreboard(seasontype=2)           # 1=pre, 2=regular, 3=post
+
+# Teams
+sport.teams()                  # All teams
+sport.team("NYY")              # Team details
+sport.team_roster("NYY")       # Team roster
+sport.team_schedule("NYY")     # Team schedule
+sport.team_injuries("NYY")     # Team injuries
+
+# League-wide data
+sport.injuries()               # All injuries
+sport.transactions()           # Trades, signings, IR moves
+sport.statistics()             # League statistics
+sport.leaders()                # Statistical leaders
+sport.venues()                 # Stadium information
+sport.franchises()             # Franchise data
+sport.events()                 # All games
+sport.positions()              # All positions
+
+# Other
+sport.standings()              # Standings
+sport.news()                   # News articles
+sport.event("401547417")       # Game details
+sport.playbyplay("401547417")  # Play-by-play data
+sport.athlete("12345")         # Athlete profile
+sport.athlete_stats("12345")   # Athlete statistics
+sport.seasons(2024)            # Season information
 ```
 
+## Betting Odds
+
+Extract odds from scoreboard responses:
+
+```python
+from espn_sports_api import NFL, Odds
+
+nfl = NFL()
+scoreboard = nfl.scoreboard()
+
+# Get all odds
+all_odds = Odds.from_scoreboard(scoreboard)
+for game in all_odds:
+    print(f"{game.away_team} @ {game.home_team}")
+    if game.spread:
+        print(f"  Spread: {game.spread.favorite} {game.spread.spread}")
+    if game.moneyline:
+        print(f"  ML: {game.moneyline.home_odds}/{game.moneyline.away_odds}")
+    if game.total:
+        print(f"  O/U: {game.total.over_under}")
+
+# Or get specific data
+spreads = Odds.spreads(scoreboard)
+moneylines = Odds.moneylines(scoreboard)
+totals = Odds.totals(scoreboard)
+```
+
+## Data Models
+
+Parse API responses into dataclasses:
+
+```python
+from espn_sports_api import NFL, parse_injuries, parse_teams
+
+nfl = NFL()
+
+# Parse injuries
+injury_response = nfl.injuries()
+injuries = parse_injuries(injury_response)
+for injury in injuries:
+    print(f"{injury.athlete_name} ({injury.position}): {injury.status}")
+
+# Parse teams
+teams_response = nfl.teams()
+teams = parse_teams(teams_response)
+for team in teams:
+    print(f"{team.name} ({team.abbreviation})")
+```
+
+Available models: `Venue`, `Broadcast`, `Weather`, `Injury`, `Transaction`, `Athlete`, `Team`
+
 ## Soccer Leagues
+
+90+ leagues supported:
 
 ```python
 from espn_sports_api import Soccer
 
-# Use league name
+# Major leagues
 epl = Soccer(league="epl")
 la_liga = Soccer(league="la_liga")
+bundesliga = Soccer(league="bundesliga")
+serie_a = Soccer(league="serie_a")
+ligue_1 = Soccer(league="ligue_1")
 mls = Soccer(league="mls")
 
-# Or ESPN code directly
-bundesliga = Soccer(league="ger.1")
+# Cups and competitions
+champions_league = Soccer(league="champions_league")
+europa_league = Soccer(league="europa_league")
+fa_cup = Soccer(league="fa_cup")
+copa_libertadores = Soccer(league="copa_libertadores")
+world_cup = Soccer(league="world_cup")
 
-# Available leagues
+# International
+liga_mx = Soccer(league="liga_mx")
+eredivisie = Soccer(league="eredivisie")
+scottish_premiership = Soccer(league="scottish_premiership")
+j_league = Soccer(league="j_league")
+
+# All available leagues
 print(Soccer.available_leagues())
 
-# Get team fixtures (upcoming matches)
-fixtures = epl.team_schedule(team_id="359", fixtures=True)
-
-# Get scores across all leagues
+# Cross-league scoreboard
 all_scores = Soccer.all_leagues_scoreboard(dates="20240115")
 ```
 
@@ -92,16 +172,11 @@ f1 = Racing(series="f1")
 nascar = Racing(series="nascar")
 indycar = Racing(series="indycar")
 
-# Get standings
 standings = f1.standings()
-
-# Get schedule
 schedule = f1.schedule(season=2024)
 ```
 
 ## Fantasy Leagues
-
-For private leagues, you'll need your ESPN cookies (`SWID` and `espn_s2`).
 
 ```python
 from espn_sports_api import FantasyFootball
@@ -109,7 +184,7 @@ from espn_sports_api import FantasyFootball
 # Public league
 league = FantasyFootball(league_id=123456, season=2024)
 
-# Private league
+# Private league (requires cookies)
 league = FantasyFootball(
     league_id=123456,
     season=2024,
@@ -124,8 +199,6 @@ standings = league.standings()
 
 ## Context Manager
 
-All classes support context managers for automatic cleanup:
-
 ```python
 with NFL() as nfl:
     scores = nfl.scoreboard()
@@ -133,13 +206,12 @@ with NFL() as nfl:
 
 ## API Reference
 
-ESPN's public API doesn't require authentication. The base URLs used:
+ESPN's public API doesn't require authentication. Base URLs:
 
-- `site.api.espn.com` - Scoreboards, teams, standings, news
-- `sports.core.api.espn.com` - Athletes, injuries, seasons, detailed stats
+- `site.api.espn.com` - Scoreboards, teams, standings, news, injuries, transactions
+- `sports.core.api.espn.com` - Athletes, venues, franchises, events, leaders
 - `site.web.api.espn.com` - Athlete statistics
 - `lm-api-reads.fantasy.espn.com` - Fantasy leagues
-- `gambit-api.fantasy.espn.com` - Pick'em challenges
 
 ## License
 

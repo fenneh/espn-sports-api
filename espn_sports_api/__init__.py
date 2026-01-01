@@ -8,6 +8,21 @@ from .fantasy import (
     FantasyHockey,
     FantasyLeague,
 )
+from .odds import Odds, GameOdds, Spread, Moneyline, Total
+from .models import (
+    Venue,
+    Broadcast,
+    Weather,
+    Injury,
+    Transaction,
+    Athlete,
+    Team,
+    parse_injuries,
+    parse_transactions,
+    parse_venues,
+    parse_athletes,
+    parse_teams,
+)
 from .sports import (
     NFL,
     NBA,
@@ -23,11 +38,15 @@ from .sports import (
     WomensNCAAB,
     CollegeBaseball,
     WNBA,
+    CFL,
+    XFL,
 )
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __all__ = [
+    # Client
     "ESPNClient",
+    # Sports
     "NFL",
     "NBA",
     "MLB",
@@ -42,9 +61,31 @@ __all__ = [
     "WomensNCAAB",
     "CollegeBaseball",
     "WNBA",
+    "CFL",
+    "XFL",
+    # Fantasy
     "FantasyFootball",
     "FantasyBasketball",
     "FantasyBaseball",
     "FantasyHockey",
     "FantasyLeague",
+    # Odds
+    "Odds",
+    "GameOdds",
+    "Spread",
+    "Moneyline",
+    "Total",
+    # Models
+    "Venue",
+    "Broadcast",
+    "Weather",
+    "Injury",
+    "Transaction",
+    "Athlete",
+    "Team",
+    "parse_injuries",
+    "parse_transactions",
+    "parse_venues",
+    "parse_athletes",
+    "parse_teams",
 ]
