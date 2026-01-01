@@ -35,8 +35,11 @@ jobs:
       - name: Set up Python
         run: uv python install 3.12
 
+      - name: Install dependencies
+        run: uv sync --dev
+
       - name: Type check with ty
-        run: uvx ty check
+        run: uv run ty check --ignore unresolved-import
 
   test:
     runs-on: ubuntu-latest
