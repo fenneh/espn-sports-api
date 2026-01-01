@@ -17,6 +17,7 @@ class TestCache:
     def test_cache_init_with_disk(self, tmp_path):
         """Test cache initialization with disk storage."""
         cache = Cache(ttl=60, cache_dir=tmp_path / "cache")
+        assert cache.cache_dir is not None
         assert cache.cache_dir.exists()
 
     def test_cache_set_and_get(self):
@@ -97,14 +98,15 @@ class TestESPNClientCaching:
         """Test client with disk cache."""
         cache_dir = tmp_path / "cache"
         client = ESPNClient(cache_ttl=300, cache_dir=cache_dir)
+        assert client._cache is not None
         assert client._cache.cache_dir == cache_dir
         assert cache_dir.exists()
 
     def test_client_clear_cache(self):
         """Test clearing client cache."""
         client = ESPNClient(cache_ttl=300)
+        assert client._cache is not None
 
-        # Manually add something to cache
         client._cache.set("http://test.com", None, {"test": 1})
         assert client._cache.get("http://test.com", None) is not None
 

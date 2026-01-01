@@ -70,6 +70,7 @@ class TestOddsExtraction:
         """Test spread extraction."""
         event = sample_scoreboard_response["events"][0]
         odds = Odds.from_event(event)
+        assert odds is not None
 
         assert odds.spread is not None
         assert odds.spread.spread == 3.5
@@ -79,6 +80,7 @@ class TestOddsExtraction:
         """Test moneyline extraction."""
         event = sample_scoreboard_response["events"][0]
         odds = Odds.from_event(event)
+        assert odds is not None
 
         assert odds.moneyline is not None
         assert odds.moneyline.home_odds == -150
@@ -88,6 +90,7 @@ class TestOddsExtraction:
         """Test over/under extraction."""
         event = sample_scoreboard_response["events"][0]
         odds = Odds.from_event(event)
+        assert odds is not None
 
         assert odds.total is not None
         assert odds.total.over_under == 45.5
