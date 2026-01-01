@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional
 
 from .base import BaseSport
 
@@ -13,7 +13,7 @@ class WNBA(BaseSport):
     SPORT = "basketball"
     LEAGUE = "wnba"
 
-    def draft(self, year: int = None) -> dict[str, Any]:
+    def draft(self, year: Optional[int] = None) -> dict[str, Any]:
         """Get WNBA draft data.
 
         Args:
@@ -25,7 +25,7 @@ class WNBA(BaseSport):
         params = {"year": year} if year else None
         return self.client.get_core(f"{self._endpoint()}/draft", params)
 
-    def leaders(self, category: str = None) -> dict[str, Any]:
+    def leaders(self, category: Optional[str] = None) -> dict[str, Any]:
         """Get statistical leaders.
 
         Args:
@@ -39,7 +39,7 @@ class WNBA(BaseSport):
             endpoint = f"{endpoint}/{category}"
         return self.client.get_core(endpoint)
 
-    def transactions(self) -> dict[str, Any]:
+    def transactions(self, limit: Optional[int] = None) -> dict[str, Any]:
         """Get transactions.
 
         Returns:

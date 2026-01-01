@@ -27,10 +27,15 @@ class UFC(BaseSport):
             endpoint = f"{endpoint}/{division}"
         return self.client.get_core(endpoint)
 
-    def events(self, limit: Optional[int] = None) -> dict[str, Any]:
+    def events(
+        self,
+        dates: Optional[str] = None,
+        limit: Optional[int] = None,
+    ) -> dict[str, Any]:
         """Get upcoming UFC events.
 
         Args:
+            dates: Date filter (ignored, included for API compatibility).
             limit: Maximum number of events.
 
         Returns:

@@ -47,8 +47,11 @@ class MLB(BaseSport):
         """
         return self.client.get_core(f"{self._core_endpoint()}/freeagents")
 
-    def transactions(self) -> dict[str, Any]:
+    def transactions(self, limit: Optional[int] = None) -> dict[str, Any]:
         """Get transactions.
+
+        Args:
+            limit: Max results (ignored, included for API compatibility).
 
         Returns:
             Transaction data.

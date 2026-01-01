@@ -47,7 +47,7 @@ class NBA(BaseSport):
         """
         return self.client.get_core(f"{self._core_endpoint()}/freeagents")
 
-    def transactions(self) -> dict[str, Any]:
+    def transactions(self, limit: Optional[int] = None) -> dict[str, Any]:
         """Get transactions.
 
         Returns:

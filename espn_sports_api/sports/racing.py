@@ -43,11 +43,16 @@ class Racing(BaseSport):
         params = {"season": season} if season else None
         return self.client.get_core(f"{self._core_endpoint()}/events", params)
 
-    def standings(self, season: Optional[int] = None, **kwargs) -> dict[str, Any]:
+    def standings(
+        self,
+        season: Optional[int] = None,
+        group: Optional[str] = None,
+    ) -> dict[str, Any]:
         """Get driver/constructor standings.
 
         Args:
             season: Season year.
+            group: Ignored, included for API compatibility.
 
         Returns:
             Standings data.
