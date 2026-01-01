@@ -11,8 +11,10 @@ class ESPNClient:
 
     BASE_URL = "https://site.api.espn.com/apis/site/v2/sports/"
     CORE_URL = "https://sports.core.api.espn.com/v2/sports/"
+    WEB_URL = "https://site.web.api.espn.com/apis/common/v3/sports/"
     NOW_URL = "https://now.core.api.espn.com/v1/"
     FANTASY_URL = "https://lm-api-reads.fantasy.espn.com/apis/v3/"
+    GAMBIT_URL = "https://gambit-api.fantasy.espn.com/apis/v1/"
 
     def __init__(self, timeout: int = 30):
         """Initialize the ESPN client.
@@ -100,6 +102,30 @@ class ESPNClient:
             JSON response.
         """
         return self._request(self.FANTASY_URL, endpoint, params)
+
+    def get_web(self, endpoint: str, params: Optional[dict] = None) -> dict[str, Any]:
+        """Make a request to the web API (athlete stats).
+
+        Args:
+            endpoint: API endpoint path.
+            params: Query parameters.
+
+        Returns:
+            JSON response.
+        """
+        return self._request(self.WEB_URL, endpoint, params)
+
+    def get_gambit(self, endpoint: str, params: Optional[dict] = None) -> dict[str, Any]:
+        """Make a request to the gambit API (pick'em challenges).
+
+        Args:
+            endpoint: API endpoint path.
+            params: Query parameters.
+
+        Returns:
+            JSON response.
+        """
+        return self._request(self.GAMBIT_URL, endpoint, params)
 
     def close(self) -> None:
         """Close the session."""

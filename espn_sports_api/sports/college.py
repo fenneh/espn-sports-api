@@ -74,6 +74,20 @@ class NCAAB(BaseSport):
         params = {"season": season} if season else None
         return self.client.get(f"{self._endpoint()}/tournament", params)
 
+    def weeks(self, season: int, season_type: int = 2) -> dict[str, Any]:
+        """Get weeks for a season.
+
+        Args:
+            season: Season year.
+            season_type: Season type (2 = regular season).
+
+        Returns:
+            Week data.
+        """
+        return self.client.get_core(
+            f"{self._endpoint()}/seasons/{season}/types/{season_type}/weeks"
+        )
+
 
 class WomensNCAAB(BaseSport):
     """NCAA Women's Basketball API access."""
@@ -100,3 +114,26 @@ class WomensNCAAB(BaseSport):
         """
         params = {"season": season} if season else None
         return self.client.get(f"{self._endpoint()}/tournament", params)
+
+
+class CollegeBaseball(BaseSport):
+    """NCAA Baseball API access."""
+
+    SPORT = "baseball"
+    LEAGUE = "college-baseball"
+
+    def rankings(self) -> dict[str, Any]:
+        """Get college baseball rankings.
+
+        Returns:
+            Rankings data.
+        """
+        return self.client.get(f"{self._endpoint()}/rankings")
+
+    def conferences(self) -> dict[str, Any]:
+        """Get conference information.
+
+        Returns:
+            Conference data.
+        """
+        return self.client.get_core(f"{self._endpoint()}/groups")

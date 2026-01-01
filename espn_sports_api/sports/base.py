@@ -29,12 +29,16 @@ class BaseSport:
         self,
         dates: Optional[str] = None,
         limit: Optional[int] = None,
+        groups: Optional[int] = None,
+        calendar: bool = False,
     ) -> dict[str, Any]:
         """Get scoreboard data.
 
         Args:
-            dates: Date filter (YYYYMMDD format).
+            dates: Date filter (YYYYMMDD or YYYYMMDD-YYYYMMDD range).
             limit: Maximum number of results.
+            groups: Conference/league group ID.
+            calendar: Include calendar data.
 
         Returns:
             Scoreboard data.
@@ -44,6 +48,10 @@ class BaseSport:
             params["dates"] = dates
         if limit:
             params["limit"] = limit
+        if groups:
+            params["groups"] = groups
+        if calendar:
+            params["calendar"] = "true"
         return self.client.get(f"{self._endpoint()}/scoreboard", params or None)
 
     def news(self, limit: Optional[int] = None) -> dict[str, Any]:
@@ -155,6 +163,42 @@ class BaseSport:
             Athlete data.
         """
         return self.client.get_core(f"{self._endpoint()}/athletes/{athlete_id}")
+
+    def athlete_stats(self, athlete_id: str) -> dict[str, Any]:
+        """Get athlete statistics.
+
+        Args:
+            athlete_id: Athlete ID.
+
+        Returns:
+            Athlete stats.
+        """
+        return self.client.get_web(f"{self._endpoint()}/athletes/{athlete_id}/stats")
+
+    def team_injuries(self, team_id: str) -> dict[str, Any]:
+        """Get team injury report.
+
+        Args:
+            team_id: Team ID.
+
+        Returns:
+            Injury data.
+        """
+        return self.client.get_core(f"{self._endpoint()}/teams/{team_id}/injuries")
+
+    def seasons(self, year: Optional[int] = None) -> dict[str, Any]:
+        """Get season information.
+
+        Args:
+            year: Season year.
+
+        Returns:
+            Season data.
+        """
+        endpoint = f"{self._endpoint()}/seasons"
+        if year:
+            endpoint = f"{endpoint}/{year}"
+        return self.client.get_core(endpoint)
 
     def close(self) -> None:
         """Close client if we own it."""

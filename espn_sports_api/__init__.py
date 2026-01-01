@@ -8,7 +8,22 @@ from .fantasy import (
     FantasyHockey,
     FantasyLeague,
 )
-from .sports import NFL, NBA, MLB, NHL, Soccer, UFC, Golf, Racing, Tennis, NCAAF, NCAAB, WNBA
+from .sports import (
+    NFL,
+    NBA,
+    MLB,
+    NHL,
+    Soccer,
+    UFC,
+    Golf,
+    Racing,
+    Tennis,
+    NCAAF,
+    NCAAB,
+    WomensNCAAB,
+    CollegeBaseball,
+    WNBA,
+)
 
 __version__ = "0.1.0"
 __all__ = [
@@ -24,6 +39,8 @@ __all__ = [
     "Tennis",
     "NCAAF",
     "NCAAB",
+    "WomensNCAAB",
+    "CollegeBaseball",
     "WNBA",
     "FantasyFootball",
     "FantasyBasketball",

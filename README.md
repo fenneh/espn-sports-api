@@ -31,8 +31,8 @@ table = epl.standings()
 | Sport | Class | Leagues/Tours |
 |-------|-------|---------------|
 | Football | `NFL`, `NCAAF` | NFL, College Football |
-| Basketball | `NBA`, `NCAAB`, `WNBA` | NBA, College Basketball, WNBA |
-| Baseball | `MLB` | MLB |
+| Basketball | `NBA`, `NCAAB`, `WomensNCAAB`, `WNBA` | NBA, College Basketball, WNBA |
+| Baseball | `MLB`, `CollegeBaseball` | MLB, College Baseball |
 | Hockey | `NHL` | NHL |
 | Soccer | `Soccer` | EPL, La Liga, Bundesliga, Serie A, MLS, Champions League, etc. |
 | MMA | `UFC` | UFC |
@@ -46,13 +46,18 @@ All sport classes share these methods:
 
 ```python
 sport.scoreboard(dates="20240115")  # Get scores for specific date
+sport.scoreboard(groups=80)          # Filter by conference/group ID
 sport.teams()                        # Get all teams
 sport.team("NYY")                    # Get team by ID/abbreviation
 sport.team_roster("NYY")             # Get team roster
 sport.team_schedule("NYY")           # Get team schedule
+sport.team_injuries("NYY")           # Get injury report
 sport.standings()                    # Get standings
 sport.news()                         # Get news articles
 sport.event("401547417")             # Get game/event details
+sport.athlete("12345")               # Get athlete profile
+sport.athlete_stats("12345")         # Get athlete statistics
+sport.seasons(2024)                  # Get season information
 ```
 
 ## Soccer Leagues
@@ -70,6 +75,12 @@ bundesliga = Soccer(league="ger.1")
 
 # Available leagues
 print(Soccer.available_leagues())
+
+# Get team fixtures (upcoming matches)
+fixtures = epl.team_schedule(team_id="359", fixtures=True)
+
+# Get scores across all leagues
+all_scores = Soccer.all_leagues_scoreboard(dates="20240115")
 ```
 
 ## Racing
@@ -124,9 +135,11 @@ with NFL() as nfl:
 
 ESPN's public API doesn't require authentication. The base URLs used:
 
-- `site.api.espn.com` - Scoreboards, teams, standings
-- `sports.core.api.espn.com` - Athletes, detailed stats
+- `site.api.espn.com` - Scoreboards, teams, standings, news
+- `sports.core.api.espn.com` - Athletes, injuries, seasons, detailed stats
+- `site.web.api.espn.com` - Athlete statistics
 - `lm-api-reads.fantasy.espn.com` - Fantasy leagues
+- `gambit-api.fantasy.espn.com` - Pick'em challenges
 
 ## License
 
