@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from datetime import date, timedelta
+from typing import Any, Optional, Union
 
 from ..client import ESPNClient
 
@@ -337,6 +338,116 @@ class BaseSport:
         if category:
             endpoint = f"{endpoint}/{category}"
         return self.client.get_core(endpoint)
+
+    # -------------------------------------------------------------------------
+    # Convenience methods for common operations
+    # -------------------------------------------------------------------------
+
+    def today(self) -> dict[str, Any]:
+        """Get today's games.
+
+        Returns:
+            Scoreboard data for today.
+
+        Example:
+            >>> nfl = NFL()
+            >>> games = nfl.today()
+            >>> for event in games.get("events", []):
+            ...     print(event["name"])
+        """
+        return self.scoreboard(dates=date.today().strftime("%Y%m%d"))
+
+    def yesterday(self) -> dict[str, Any]:
+        """Get yesterday's games.
+
+        Returns:
+            Scoreboard data for yesterday.
+        """
+        d = date.today() - timedelta(days=1)
+        return self.scoreboard(dates=d.strftime("%Y%m%d"))
+
+    def tomorrow(self) -> dict[str, Any]:
+        """Get tomorrow's games.
+
+        Returns:
+            Scoreboard data for tomorrow.
+        """
+        d = date.today() + timedelta(days=1)
+        return self.scoreboard(dates=d.strftime("%Y%m%d"))
+
+    def on_date(self, d: Union[date, str]) -> dict[str, Any]:
+        """Get games for a specific date.
+
+        Args:
+            d: A date object or string in YYYYMMDD format.
+
+        Returns:
+            Scoreboard data for the specified date.
+
+        Example:
+            >>> from datetime import date
+            >>> nfl = NFL()
+            >>> games = nfl.on_date(date(2024, 12, 25))
+            >>> games = nfl.on_date("20241225")  # also works
+        """
+        if isinstance(d, date):
+            d = d.strftime("%Y%m%d")
+        return self.scoreboard(dates=d)
+
+    def date_range(self, start: Union[date, str], end: Union[date, str]) -> dict[str, Any]:
+        """Get games within a date range.
+
+        Args:
+            start: Start date (inclusive).
+            end: End date (inclusive).
+
+        Returns:
+            Scoreboard data for the date range.
+
+        Example:
+            >>> from datetime import date
+            >>> nfl = NFL()
+            >>> games = nfl.date_range(date(2024, 12, 20), date(2024, 12, 31))
+        """
+        if isinstance(start, date):
+            start = start.strftime("%Y%m%d")
+        if isinstance(end, date):
+            end = end.strftime("%Y%m%d")
+        return self.scoreboard(dates=f"{start}-{end}")
+
+    def live(self) -> dict[str, Any]:
+        """Get currently live/in-progress games.
+
+        Returns:
+            Scoreboard data filtered to only in-progress games.
+
+        Example:
+            >>> nfl = NFL()
+            >>> live_games = nfl.live()
+            >>> print(f"{len(live_games['events'])} games in progress")
+        """
+        data = self.today()
+        events = data.get("events", [])
+        live_events = [
+            e for e in events if e.get("status", {}).get("type", {}).get("state") == "in"
+        ]
+        return {**data, "events": live_events}
+
+    def for_week(self, week_num: int, season: Optional[int] = None) -> dict[str, Any]:
+        """Get games for a specific week (for weekly sports like NFL/NCAAF).
+
+        Args:
+            week_num: Week number (e.g., 1-18 for NFL regular season).
+            season: Season year. Defaults to current season.
+
+        Returns:
+            Scoreboard data for the specified week.
+
+        Example:
+            >>> nfl = NFL()
+            >>> week10 = nfl.for_week(10, 2024)
+        """
+        return self.scoreboard(week=week_num, season=season)
 
     def close(self) -> None:
         """Close client if we own it."""

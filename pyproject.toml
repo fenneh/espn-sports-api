@@ -35,6 +35,12 @@ dev = [
 Homepage = "https://github.com/fenneh/espn-sports-api"
 Repository = "https://github.com/fenneh/espn-sports-api"
 
+[tool.hatch.build.targets.wheel]
+packages = ["espn_sports_api"]
+
+[tool.hatch.build.targets.sdist]
+exclude = ["examples/", "tests/"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py39"

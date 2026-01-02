@@ -19,6 +19,11 @@ class Venue:
     indoor: bool = False
     grass: bool = True
 
+    def __str__(self) -> str:
+        location = f"{self.city}, {self.state}" if self.state else self.city
+        cap = f" ({self.capacity:,} capacity)" if self.capacity else ""
+        return f"{self.name} - {location}{cap}"
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Venue":
         """Create Venue from API response dict."""
@@ -44,6 +49,9 @@ class Broadcast:
     language: str
     region: str
 
+    def __str__(self) -> str:
+        return self.network
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Broadcast":
         """Create Broadcast from API response dict."""
@@ -63,6 +71,9 @@ class Weather:
     conditions: str
     high_temp: Optional[int] = None
     low_temp: Optional[int] = None
+
+    def __str__(self) -> str:
+        return f"{self.temperature}°F, {self.conditions}"
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Weather":
@@ -88,6 +99,10 @@ class Injury:
     body_part: str
     description: str
     return_date: Optional[str] = None
+
+    def __str__(self) -> str:
+        injury = self.injury_type or self.body_part
+        return f"{self.athlete_name} ({self.position}, {self.team}): {self.status} - {injury}"
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Injury":
@@ -117,6 +132,10 @@ class Transaction:
     description: str
     team: str
     athlete_name: Optional[str] = None
+
+    def __str__(self) -> str:
+        player = f"{self.athlete_name} - " if self.athlete_name else ""
+        return f"{self.date}: {player}{self.team} - {self.transaction_type}"
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Transaction":
@@ -149,6 +168,11 @@ class Athlete:
     birthplace: str = ""
     experience: int = 0
     headshot_url: Optional[str] = None
+
+    def __str__(self) -> str:
+        jersey = f"#{self.jersey} " if self.jersey else ""
+        pos_team = f"({self.position}, {self.team})" if self.position and self.team else ""
+        return f"{jersey}{self.name} {pos_team}".strip()
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Athlete":
@@ -191,6 +215,10 @@ class Team:
     logo_url: Optional[str] = None
     record: str = ""
     standing: str = ""
+
+    def __str__(self) -> str:
+        record = f" ({self.record})" if self.record else ""
+        return f"{self.name} ({self.abbreviation}){record}"
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Team":

@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
+from ..constants import Conferences, NCAABConference, NCAAFConference
 from .base import BaseSport
 
 
@@ -12,6 +13,54 @@ class NCAAF(BaseSport):
 
     SPORT = "football"
     LEAGUE = "college-football"
+
+    def scoreboard(
+        self,
+        dates: Optional[str] = None,
+        limit: Optional[int] = None,
+        groups: Optional[int] = None,
+        calendar: bool = False,
+        season: Optional[int] = None,
+        seasontype: Optional[int] = None,
+        week: Optional[int] = None,
+        conference: Optional[Union[str, NCAAFConference, int]] = None,
+    ) -> dict[str, Any]:
+        """Get scoreboard with optional conference filter.
+
+        Args:
+            dates: Date filter (YYYYMMDD format).
+            limit: Maximum number of results.
+            groups: Conference/league group ID (prefer using conference param).
+            calendar: Include calendar data.
+            season: Season year (e.g., 2025).
+            seasontype: Season type (1=preseason, 2=regular, 3=postseason).
+            week: Week number.
+            conference: Conference name (e.g., 'SEC'), enum, or ID.
+
+        Returns:
+            Scoreboard data.
+
+        Example:
+            >>> ncaaf = NCAAF()
+            >>> ncaaf.scoreboard(conference="SEC")
+            >>> ncaaf.scoreboard(conference=NCAAFConference.BIG_TEN)
+        """
+        if conference is not None:
+            if isinstance(conference, str):
+                groups = Conferences.get("ncaaf", conference)
+            elif isinstance(conference, NCAAFConference):
+                groups = conference.value
+            else:
+                groups = int(conference)
+        return super().scoreboard(
+            dates=dates,
+            limit=limit,
+            groups=groups,
+            calendar=calendar,
+            season=season,
+            seasontype=seasontype,
+            week=week,
+        )
 
     def rankings(self) -> dict[str, Any]:
         """Get college football rankings (AP, Coaches poll).
@@ -47,6 +96,54 @@ class NCAAB(BaseSport):
 
     SPORT = "basketball"
     LEAGUE = "mens-college-basketball"
+
+    def scoreboard(
+        self,
+        dates: Optional[str] = None,
+        limit: Optional[int] = None,
+        groups: Optional[int] = None,
+        calendar: bool = False,
+        season: Optional[int] = None,
+        seasontype: Optional[int] = None,
+        week: Optional[int] = None,
+        conference: Optional[Union[str, NCAABConference, int]] = None,
+    ) -> dict[str, Any]:
+        """Get scoreboard with optional conference filter.
+
+        Args:
+            dates: Date filter (YYYYMMDD format).
+            limit: Maximum number of results.
+            groups: Conference/league group ID (prefer using conference param).
+            calendar: Include calendar data.
+            season: Season year (e.g., 2025).
+            seasontype: Season type (1=preseason, 2=regular, 3=postseason).
+            week: Week number.
+            conference: Conference name (e.g., 'BIG_TEN'), enum, or ID.
+
+        Returns:
+            Scoreboard data.
+
+        Example:
+            >>> ncaab = NCAAB()
+            >>> ncaab.scoreboard(conference="SEC")
+            >>> ncaab.scoreboard(conference=NCAABConference.BIG_EAST)
+        """
+        if conference is not None:
+            if isinstance(conference, str):
+                groups = Conferences.get("ncaab", conference)
+            elif isinstance(conference, NCAABConference):
+                groups = conference.value
+            else:
+                groups = int(conference)
+        return super().scoreboard(
+            dates=dates,
+            limit=limit,
+            groups=groups,
+            calendar=calendar,
+            season=season,
+            seasontype=seasontype,
+            week=week,
+        )
 
     def rankings(self) -> dict[str, Any]:
         """Get college basketball rankings (AP, Coaches poll).

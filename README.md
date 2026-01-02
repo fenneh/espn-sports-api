@@ -22,11 +22,14 @@ pip install espn-sports-api
 ## Quick Start
 
 ```python
-from espn_sports_api import NFL, NBA, Soccer
+from espn_sports_api import NFL, NBA, Soccer, quick_scores
+
+# One-liner for today's scores
+scores = quick_scores("nba")
 
 # Get today's NFL scores
 nfl = NFL()
-scores = nfl.scoreboard()
+scores = nfl.today()
 
 # Get NBA team roster
 nba = NBA()
@@ -86,6 +89,37 @@ sport.playbyplay("401547417")  # Play-by-play data
 sport.athlete("12345")         # Athlete profile
 sport.athlete_stats("12345")   # Athlete statistics
 sport.seasons(2024)            # Season information
+
+# Date convenience methods
+sport.today()                  # Today's games
+sport.yesterday()              # Yesterday's games
+sport.tomorrow()               # Tomorrow's games
+sport.live()                   # In-progress games only
+sport.on_date(date(2024,12,25)) # Games on specific date
+sport.date_range(start, end)   # Games in date range
+sport.for_week(10, season=2024) # Games for specific week
+```
+
+## College Conference Filtering
+
+Filter college sports by conference:
+
+```python
+from espn_sports_api import NCAAF, NCAAB, NCAAFConference, Conferences
+
+# By string name
+ncaaf = NCAAF()
+sec_games = ncaaf.scoreboard(conference="SEC")
+big_ten = ncaaf.scoreboard(conference="Big Ten")
+
+# By enum (type-safe)
+ncaab = NCAAB()
+games = ncaab.scoreboard(conference=NCAABConference.BIG_EAST)
+
+# Lookup conference IDs
+Conferences.get("ncaaf", "SEC")          # Returns 8
+Conferences.get("ncaab", "Big Ten")      # Returns 7
+Conferences.list_all("ncaaf")            # All NCAAF conferences
 ```
 
 ## Betting Odds
@@ -124,11 +158,11 @@ from espn_sports_api import NFL, parse_injuries, parse_teams
 
 nfl = NFL()
 
-# Parse injuries
+# Parse injuries - models have readable __str__ methods
 injury_response = nfl.injuries()
 injuries = parse_injuries(injury_response)
 for injury in injuries:
-    print(f"{injury.athlete_name} ({injury.position}): {injury.status}")
+    print(injury)  # "John Doe (QB, Patriots): Questionable - Ankle"
 
 # Parse teams
 teams_response = nfl.teams()
@@ -238,6 +272,20 @@ client = ESPNClient(cache_ttl=3600, cache_dir=Path("./cache"))
 ```python
 with NFL() as nfl:
     scores = nfl.scoreboard()
+```
+
+## Examples
+
+**Interactive Notebook** - explore the API without installing anything:
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fenneh/espn-sports-api/blob/main/examples/notebooks/explore_sports_data.ipynb)
+[![Deepnote](https://deepnote.com/buttons/launch-in-deepnote-small.svg)](https://deepnote.com/launch?url=https://github.com/fenneh/espn-sports-api/blob/main/examples/notebooks/explore_sports_data.ipynb)
+
+Or run the Python scripts locally:
+
+```bash
+python examples/scripts/nfl_example.py
+python examples/scripts/soccer_epl_example.py
 ```
 
 ## API Reference
