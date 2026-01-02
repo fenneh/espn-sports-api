@@ -176,7 +176,28 @@ class Soccer(BaseSport):
         Returns:
             League table data.
         """
-        return self.standings()
+        # Soccer standings use a different API path than other sports
+        url = f"https://site.api.espn.com/apis/v2/sports/soccer/{self.LEAGUE}/standings"
+        response = self.client.session.get(url, timeout=self.client.timeout)
+        response.raise_for_status()
+        return response.json()
+
+    def standings(
+        self,
+        season: Optional[int] = None,
+        group: Optional[str] = None,
+    ) -> dict[str, Any]:
+        """Get league standings/table.
+
+        Args:
+            season: Season year.
+            group: Standings group.
+
+        Returns:
+            Standings data.
+        """
+        # Soccer standings use a different API path
+        return self.table()
 
     def transfers(self) -> dict[str, Any]:
         """Get transfer news.
