@@ -254,8 +254,22 @@ def parse_injuries(response: dict[str, Any]) -> list[Injury]:
     Returns:
         List of Injury objects.
     """
-    items = response.get("items", response.get("injuries", []))
-    return [Injury.from_dict(item) for item in items]
+    items = response.get("items", [])
+    if items:
+        return [Injury.from_dict(item) for item in items]
+
+    # NFL/NBA injuries API returns nested structure: teams -> injuries
+    team_injuries = response.get("injuries", [])
+    result = []
+    for team_data in team_injuries:
+        team_name = team_data.get("displayName", "")
+        for injury in team_data.get("injuries", []):
+            # Inject team name if athlete doesn't have it
+            athlete = injury.get("athlete", {})
+            if not athlete.get("team"):
+                athlete["team"] = {"displayName": team_name}
+            result.append(Injury.from_dict(injury))
+    return result
 
 
 def parse_transactions(response: dict[str, Any]) -> list[Transaction]:
