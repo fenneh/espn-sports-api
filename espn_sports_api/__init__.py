@@ -86,7 +86,7 @@ def quick_scores(sport: str = "nfl") -> dict[str, Any]:
     return instance.today()
 
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 __all__ = [
     # Client
     "ESPNClient",
