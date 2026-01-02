@@ -4,6 +4,8 @@
 [![CI](https://github.com/fenneh/espn-sports-api/actions/workflows/ci.yml/badge.svg)](https://github.com/fenneh/espn-sports-api/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/pypi/pyversions/espn-sports-api)](https://pypi.org/project/espn-sports-api/)
 [![License](https://img.shields.io/pypi/l/espn-sports-api)](https://github.com/fenneh/espn-sports-api/blob/main/LICENSE)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fenneh/espn-sports-api/blob/main/examples/notebooks/explore_sports_data.ipynb)
+[![Deepnote](https://deepnote.com/buttons/launch-in-deepnote-small.svg)](https://deepnote.com/launch?url=https://github.com/fenneh/espn-sports-api/blob/main/examples/notebooks/explore_sports_data.ipynb)
 
 Python client for ESPN's public API. No authentication required for most endpoints.
 
@@ -276,12 +278,7 @@ with NFL() as nfl:
 
 ## Examples
 
-**Interactive Notebook** - explore the API without installing anything:
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fenneh/espn-sports-api/blob/main/examples/notebooks/explore_sports_data.ipynb)
-[![Deepnote](https://deepnote.com/buttons/launch-in-deepnote-small.svg)](https://deepnote.com/launch?url=https://github.com/fenneh/espn-sports-api/blob/main/examples/notebooks/explore_sports_data.ipynb)
-
-Or run the Python scripts locally:
+See the [examples/](examples/) directory for scripts and an interactive notebook:
 
 ```bash
 python examples/scripts/nfl_example.py
