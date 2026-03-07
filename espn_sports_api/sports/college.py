@@ -2,10 +2,33 @@
 
 from __future__ import annotations
 
+from enum import IntEnum
 from typing import Any, Optional, Union
 
 from ..constants import Conferences, NCAABConference, NCAAFConference
 from .base import BaseSport
+
+
+def _resolve_conference(
+    conference: Union[str, IntEnum, int, None],
+    sport: str,
+) -> Optional[int]:
+    """Resolve a conference parameter to its integer group ID.
+
+    Args:
+        conference: Conference name, enum value, or raw int.
+        sport: Sport key for Conferences.get() lookup (e.g., 'ncaaf', 'ncaab').
+
+    Returns:
+        Integer group ID, or None if conference is None.
+    """
+    if conference is None:
+        return None
+    if isinstance(conference, IntEnum):
+        return conference.value
+    if isinstance(conference, int):
+        return conference
+    return Conferences.get(sport, conference)
 
 
 class NCAAF(BaseSport):
@@ -45,13 +68,9 @@ class NCAAF(BaseSport):
             >>> ncaaf.scoreboard(conference="SEC")
             >>> ncaaf.scoreboard(conference=NCAAFConference.BIG_TEN)
         """
-        if conference is not None:
-            if isinstance(conference, str):
-                groups = Conferences.get("ncaaf", conference)
-            elif isinstance(conference, NCAAFConference):
-                groups = conference.value
-            else:
-                groups = int(conference)
+        resolved = _resolve_conference(conference, "ncaaf")
+        if resolved is not None:
+            groups = resolved
         return super().scoreboard(
             dates=dates,
             limit=limit,
@@ -128,13 +147,9 @@ class NCAAB(BaseSport):
             >>> ncaab.scoreboard(conference="SEC")
             >>> ncaab.scoreboard(conference=NCAABConference.BIG_EAST)
         """
-        if conference is not None:
-            if isinstance(conference, str):
-                groups = Conferences.get("ncaab", conference)
-            elif isinstance(conference, NCAABConference):
-                groups = conference.value
-            else:
-                groups = int(conference)
+        resolved = _resolve_conference(conference, "ncaab")
+        if resolved is not None:
+            groups = resolved
         return super().scoreboard(
             dates=dates,
             limit=limit,

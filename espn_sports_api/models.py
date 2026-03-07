@@ -159,14 +159,14 @@ class Athlete:
     first_name: str
     last_name: str
     jersey: Optional[str] = None
-    position: str = ""
-    team: str = ""
-    height: str = ""
-    weight: int = 0
+    position: Optional[str] = None
+    team: Optional[str] = None
+    height: Optional[str] = None
+    weight: Optional[int] = None
     age: Optional[int] = None
-    college: str = ""
-    birthplace: str = ""
-    experience: int = 0
+    college: Optional[str] = None
+    birthplace: Optional[str] = None
+    experience: Optional[int] = None
     headshot_url: Optional[str] = None
 
     def __str__(self) -> str:
@@ -183,20 +183,32 @@ class Athlete:
             state_or_country = birthplace.get("state", birthplace.get("country", ""))
             bp_str = f"{birthplace.get('city', '')}, {state_or_country}"
 
+        position_data = data.get("position")
+        position = position_data.get("abbreviation") if isinstance(position_data, dict) else None
+
+        team_data = data.get("team")
+        team = team_data.get("displayName") if isinstance(team_data, dict) else None
+
+        college_data = data.get("college")
+        college = college_data.get("name") if isinstance(college_data, dict) else None
+
+        experience_data = data.get("experience")
+        experience = experience_data.get("years") if isinstance(experience_data, dict) else None
+
         return cls(
             id=str(data.get("id", "")),
             name=data.get("displayName", data.get("fullName", "")),
             first_name=data.get("firstName", ""),
             last_name=data.get("lastName", ""),
             jersey=data.get("jersey"),
-            position=data.get("position", {}).get("abbreviation", ""),
-            team=data.get("team", {}).get("displayName", ""),
-            height=data.get("displayHeight", ""),
-            weight=data.get("weight", 0),
+            position=position,
+            team=team,
+            height=data.get("displayHeight"),
+            weight=data.get("weight"),
             age=data.get("age"),
-            college=data.get("college", {}).get("name", ""),
-            birthplace=bp_str,
-            experience=data.get("experience", {}).get("years", 0),
+            college=college,
+            birthplace=bp_str or None,
+            experience=experience,
             headshot_url=data.get("headshot", {}).get("href"),
         )
 

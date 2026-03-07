@@ -24,7 +24,7 @@ pip install espn-sports-api
 ## Quick Start
 
 ```python
-from espn_sports_api import NFL, NBA, Soccer, quick_scores
+from espn_sports_api import NFL, NBA, Soccer, SeasonType, quick_scores
 
 # One-liner for today's scores
 scores = quick_scores("nba")
@@ -64,7 +64,7 @@ All sport classes share these methods:
 # Scoreboard with filtering
 sport.scoreboard(dates="20240115")       # By date
 sport.scoreboard(season=2024, week=10)   # By season/week
-sport.scoreboard(seasontype=2)           # 1=pre, 2=regular, 3=post
+sport.scoreboard(seasontype=SeasonType.POSTSEASON)  # or raw int: 1=pre, 2=reg, 3=post
 
 # Teams
 sport.teams()                  # All teams
@@ -206,6 +206,9 @@ j_league = Soccer(league="j_league")
 # All available leagues
 print(Soccer.available_leagues())
 
+# Filter leagues by region
+print(Soccer.list_leagues("eng"))  # English leagues only
+
 # Cross-league scoreboard
 all_scores = Soccer.all_leagues_scoreboard(dates="20240115")
 ```
@@ -284,6 +287,28 @@ See the [examples/](examples/) directory for scripts and an interactive notebook
 python examples/scripts/nfl_example.py
 python examples/scripts/soccer_epl_example.py
 ```
+
+## Error Handling
+
+All API errors raise typed exceptions:
+
+```python
+from espn_sports_api import NFL, ESPNNotFoundError, ESPNRateLimitError, ESPNTimeoutError
+
+nfl = NFL()
+try:
+    nfl.athlete("invalid_id")
+except ESPNNotFoundError:
+    print("Athlete not found")
+except ESPNRateLimitError:
+    print("Rate limited, back off")
+except ESPNTimeoutError:
+    print("Request timed out")
+```
+
+Exception hierarchy: `ESPNApiError` (base) > `ESPNNotFoundError`, `ESPNRateLimitError`, `ESPNServerError`, `ESPNTimeoutError`, `ESPNResponseError`.
+
+Automatic retries (3x with backoff) are enabled by default for 429 and 5xx responses.
 
 ## API Reference
 

@@ -4,12 +4,26 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import time
 from pathlib import Path
 from typing import Any, Optional
 from urllib.parse import urljoin
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+from .exceptions import (
+    ESPNApiError,
+    ESPNNotFoundError,
+    ESPNRateLimitError,
+    ESPNResponseError,
+    ESPNServerError,
+    ESPNTimeoutError,
+)
+
+logger = logging.getLogger(__name__)
 
 
 class Cache:
@@ -43,6 +57,7 @@ class Cache:
         if key in self._memory:
             timestamp, data = self._memory[key]
             if now - timestamp < self.ttl:
+                logger.debug("Cache hit (memory): %s", url)
                 return data
             del self._memory[key]
 
@@ -55,11 +70,13 @@ class Cache:
                         cached = json.load(f)
                     if now - cached["timestamp"] < self.ttl:
                         self._memory[key] = (cached["timestamp"], cached["data"])
+                        logger.debug("Cache hit (disk): %s", url)
                         return cached["data"]
                     cache_file.unlink()
                 except (json.JSONDecodeError, KeyError):
                     cache_file.unlink(missing_ok=True)
 
+        logger.debug("Cache miss: %s", url)
         return None
 
     def set(self, url: str, params: Optional[dict], data: Any) -> None:
@@ -92,12 +109,14 @@ class ESPNClient:
     NOW_URL = "https://now.core.api.espn.com/v1/"
     FANTASY_URL = "https://lm-api-reads.fantasy.espn.com/apis/v3/"
     GAMBIT_URL = "https://gambit-api.fantasy.espn.com/apis/v1/"
+    STANDINGS_URL = "https://site.api.espn.com/apis/v2/sports/"
 
     def __init__(
         self,
         timeout: int = 30,
         cache_ttl: Optional[int] = None,
         cache_dir: Optional[Path] = None,
+        retries: int = 3,
     ):
         """Initialize the ESPN client.
 
@@ -105,15 +124,27 @@ class ESPNClient:
             timeout: Request timeout in seconds.
             cache_ttl: Cache time-to-live in seconds. None disables caching.
             cache_dir: Directory for disk cache. If None with cache_ttl set, uses memory only.
+            retries: Number of retries for transient failures (429, 5xx). 0 disables.
         """
         self.timeout = timeout
         self.session = requests.Session()
         self.session.headers.update(
             {
-                "User-Agent": "espn-sports-api/0.2.0",
+                "User-Agent": "espn-sports-api/0.4.0",
                 "Accept": "application/json",
             }
         )
+
+        if retries > 0:
+            retry_strategy = Retry(
+                total=retries,
+                backoff_factor=0.5,
+                status_forcelist=[429, 500, 502, 503, 504],
+                allowed_methods=["GET"],
+            )
+            adapter = HTTPAdapter(max_retries=retry_strategy)
+            self.session.mount("https://", adapter)
+            self.session.mount("http://", adapter)
 
         # Initialize cache if TTL is provided
         self._cache: Optional[Cache] = None
@@ -139,7 +170,12 @@ class ESPNClient:
             JSON response as dictionary.
 
         Raises:
-            requests.HTTPError: If the request fails.
+            ESPNNotFoundError: If the resource is not found (404).
+            ESPNRateLimitError: If rate limited (429).
+            ESPNServerError: If the server returns a 5xx error.
+            ESPNTimeoutError: If the request times out.
+            ESPNResponseError: If the response is not valid JSON.
+            ESPNApiError: For other HTTP errors.
         """
         url = urljoin(base_url, endpoint)
 
@@ -149,15 +185,43 @@ class ESPNClient:
             if cached is not None:
                 return cached
 
-        response = self.session.get(url, params=params, timeout=self.timeout)
-        response.raise_for_status()
-        data = response.json()
+        logger.debug("GET %s params=%s", url, params)
+
+        try:
+            response = self.session.get(url, params=params, timeout=self.timeout)
+        except requests.Timeout as e:
+            raise ESPNTimeoutError(f"Request timed out: {url}") from e
+        except (requests.ConnectionError, ConnectionError) as e:
+            raise ESPNApiError(f"Connection error: {url}") from e
+
+        if not response.ok:
+            self._raise_for_status(response)
+
+        try:
+            data = response.json()
+        except ValueError as e:
+            raise ESPNResponseError(f"Invalid JSON response from {url}") from e
 
         # Store in cache
         if use_cache and self._cache:
             self._cache.set(url, params, data)
 
         return data
+
+    @staticmethod
+    def _raise_for_status(response: requests.Response) -> None:
+        """Raise an appropriate ESPNApiError for HTTP error responses."""
+        status = response.status_code
+        msg = f"HTTP {status} for {response.url}"
+
+        if status == 404:
+            raise ESPNNotFoundError(msg)
+        elif status == 429:
+            raise ESPNRateLimitError(msg)
+        elif 500 <= status < 600:
+            raise ESPNServerError(msg, status_code=status)
+        else:
+            raise ESPNApiError(msg, status_code=status)
 
     def get(self, endpoint: str, params: Optional[dict] = None) -> dict[str, Any]:
         """Make a request to the site API.
@@ -230,6 +294,18 @@ class ESPNClient:
             JSON response.
         """
         return self._request(self.GAMBIT_URL, endpoint, params)
+
+    def get_standings(self, endpoint: str, params: Optional[dict] = None) -> dict[str, Any]:
+        """Make a request to the standings API (v2 sports endpoint).
+
+        Args:
+            endpoint: API endpoint path.
+            params: Query parameters.
+
+        Returns:
+            JSON response.
+        """
+        return self._request(self.STANDINGS_URL, endpoint, params)
 
     def clear_cache(self) -> None:
         """Clear all cached responses."""

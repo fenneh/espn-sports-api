@@ -8,8 +8,11 @@ from espn_sports_api.models import (
     Transaction,
     Venue,
     Weather,
+    parse_athletes,
     parse_injuries,
     parse_teams,
+    parse_transactions,
+    parse_venues,
 )
 
 
@@ -197,3 +200,310 @@ class TestParsingHelpers:
         """Test parsing empty teams response."""
         teams = parse_teams({"sports": []})
         assert teams == []
+
+    def test_parse_transactions(self):
+        txns = parse_transactions(
+            {
+                "items": [
+                    {
+                        "id": "1",
+                        "date": "2024-01-15",
+                        "type": {"text": "Signed"},
+                        "description": "Signed player",
+                        "team": {"displayName": "Team A"},
+                    }
+                ]
+            }
+        )
+        assert len(txns) == 1
+        assert txns[0].transaction_type == "Signed"
+
+    def test_parse_transactions_fallback_key(self):
+        txns = parse_transactions(
+            {
+                "transactions": [
+                    {
+                        "id": "2",
+                        "date": "2024-02-01",
+                        "type": {"text": "Trade"},
+                        "description": "Traded",
+                        "team": {"displayName": "Team B"},
+                    }
+                ]
+            }
+        )
+        assert len(txns) == 1
+        assert txns[0].transaction_type == "Trade"
+
+    def test_parse_transactions_empty(self):
+        assert parse_transactions({"items": []}) == []
+
+    def test_parse_venues(self):
+        venues = parse_venues(
+            {
+                "items": [
+                    {
+                        "id": "1",
+                        "fullName": "Test Stadium",
+                        "address": {"city": "Boston", "state": "MA", "country": "USA"},
+                        "capacity": 50000,
+                    }
+                ]
+            }
+        )
+        assert len(venues) == 1
+        assert venues[0].name == "Test Stadium"
+
+    def test_parse_venues_fallback_key(self):
+        venues = parse_venues(
+            {
+                "venues": [
+                    {
+                        "id": "2",
+                        "name": "Arena",
+                        "address": {"city": "LA", "state": "CA", "country": "USA"},
+                    }
+                ]
+            }
+        )
+        assert len(venues) == 1
+        assert venues[0].name == "Arena"
+
+    def test_parse_venues_empty(self):
+        assert parse_venues({"items": []}) == []
+
+    def test_parse_athletes(self):
+        athletes = parse_athletes(
+            {
+                "items": [
+                    {
+                        "id": "1",
+                        "displayName": "Test Player",
+                        "firstName": "Test",
+                        "lastName": "Player",
+                    }
+                ]
+            }
+        )
+        assert len(athletes) == 1
+        assert athletes[0].name == "Test Player"
+
+    def test_parse_athletes_fallback_key(self):
+        athletes = parse_athletes(
+            {
+                "athletes": [
+                    {
+                        "id": "2",
+                        "displayName": "Other Player",
+                        "firstName": "Other",
+                        "lastName": "Player",
+                    }
+                ]
+            }
+        )
+        assert len(athletes) == 1
+
+    def test_parse_athletes_empty(self):
+        assert parse_athletes({"items": []}) == []
+
+    def test_parse_injuries_nested_structure(self):
+        injuries = parse_injuries(
+            {
+                "injuries": [
+                    {
+                        "displayName": "Kansas City Chiefs",
+                        "injuries": [
+                            {
+                                "athlete": {
+                                    "id": "99",
+                                    "displayName": "Injured Guy",
+                                    "position": {"abbreviation": "WR"},
+                                },
+                                "status": "Out",
+                                "details": {"type": "Knee", "location": "Leg"},
+                                "shortComment": "Torn ACL",
+                            }
+                        ],
+                    }
+                ]
+            }
+        )
+        assert len(injuries) == 1
+        assert injuries[0].athlete_name == "Injured Guy"
+        assert injuries[0].team == "Kansas City Chiefs"
+
+
+class TestModelStr:
+    def test_venue_str(self):
+        v = Venue(id="1", name="Arrowhead", city="KC", state="MO", country="USA", capacity=76416)
+        assert "Arrowhead" in str(v)
+        assert "KC, MO" in str(v)
+        assert "76,416" in str(v)
+
+    def test_venue_str_no_state(self):
+        v = Venue(id="1", name="Wembley", city="London", state="", country="UK")
+        assert "London" in str(v)
+
+    def test_venue_str_no_capacity(self):
+        v = Venue(id="1", name="Test", city="X", state="Y", country="Z")
+        assert "capacity" not in str(v)
+
+    def test_broadcast_str(self):
+        b = Broadcast(network="ESPN", market="National", language="en", region="US")
+        assert str(b) == "ESPN"
+
+    def test_weather_str(self):
+        w = Weather(temperature=72, conditions="Sunny")
+        assert str(w) == "72°F, Sunny"
+
+    def test_injury_str(self):
+        i = Injury(
+            athlete_id="1",
+            athlete_name="John Doe",
+            team="Team A",
+            position="QB",
+            status="Questionable",
+            injury_type="Ankle",
+            body_part="Leg",
+            description="Day to day",
+        )
+        s = str(i)
+        assert "John Doe" in s
+        assert "QB" in s
+        assert "Team A" in s
+        assert "Questionable" in s
+
+    def test_injury_str_no_type_uses_body_part(self):
+        i = Injury(
+            athlete_id="1",
+            athlete_name="Jane",
+            team="T",
+            position="C",
+            status="Out",
+            injury_type="",
+            body_part="Knee",
+            description="",
+        )
+        assert "Knee" in str(i)
+
+    def test_transaction_str(self):
+        t = Transaction(
+            id="1",
+            date="2024-01-15",
+            transaction_type="Signed",
+            description="Signed",
+            team="Team A",
+            athlete_name="John Doe",
+        )
+        s = str(t)
+        assert "John Doe" in s
+        assert "Team A" in s
+        assert "2024-01-15" in s
+
+    def test_transaction_str_no_athlete(self):
+        t = Transaction(
+            id="1",
+            date="2024-01-15",
+            transaction_type="Trade",
+            description="Multi-player trade",
+            team="Team B",
+        )
+        assert "Team B" in str(t)
+
+    def test_athlete_str(self):
+        a = Athlete(
+            id="1",
+            name="John Doe",
+            first_name="John",
+            last_name="Doe",
+            jersey="12",
+            position="QB",
+            team="Team A",
+        )
+        s = str(a)
+        assert "#12" in s
+        assert "John Doe" in s
+        assert "QB" in s
+        assert "Team A" in s
+
+    def test_athlete_str_minimal(self):
+        a = Athlete(id="1", name="Jane Doe", first_name="Jane", last_name="Doe")
+        assert str(a) == "Jane Doe"
+
+    def test_team_str(self):
+        t = Team(
+            id="1",
+            name="New England Patriots",
+            abbreviation="NE",
+            location="New England",
+            nickname="Patriots",
+            color="002244",
+            alternate_color="c60c30",
+            record="10-7",
+        )
+        s = str(t)
+        assert "New England Patriots" in s
+        assert "NE" in s
+        assert "10-7" in s
+
+    def test_team_str_no_record(self):
+        t = Team(
+            id="1",
+            name="Test Team",
+            abbreviation="TT",
+            location="Test",
+            nickname="Testers",
+            color="000000",
+            alternate_color="ffffff",
+        )
+        s = str(t)
+        assert "Test Team (TT)" == s
+
+
+class TestTeamFromDictWithRecord:
+    def test_team_with_record(self):
+        data = {
+            "id": "10",
+            "displayName": "Test Team",
+            "abbreviation": "TT",
+            "location": "Test",
+            "nickname": "Testers",
+            "color": "000",
+            "alternateColor": "fff",
+            "logos": [],
+            "record": {"items": [{"summary": "10-7"}]},
+        }
+        team = Team.from_dict(data)
+        assert team.record == "10-7"
+
+
+class TestExceptionInstantiation:
+    def test_timeout_error_default(self):
+        from espn_sports_api.exceptions import ESPNTimeoutError
+
+        e = ESPNTimeoutError()
+        assert e.status_code is None
+        assert "timed out" in str(e).lower()
+
+
+class TestAthleteOptionalDefaults:
+    def test_from_dict_minimal(self):
+        data = {
+            "id": "999",
+            "displayName": "Minimal Player",
+            "firstName": "Min",
+            "lastName": "Player",
+        }
+        a = Athlete.from_dict(data)
+        assert a.id == "999"
+        assert a.name == "Minimal Player"
+        assert a.jersey is None
+        assert a.position is None
+        assert a.team is None
+        assert a.height is None
+        assert a.weight is None
+        assert a.age is None
+        assert a.college is None
+        assert a.birthplace is None
+        assert a.experience is None
+        assert a.headshot_url is None
