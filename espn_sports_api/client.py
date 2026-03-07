@@ -130,7 +130,7 @@ class ESPNClient:
         self.session = requests.Session()
         self.session.headers.update(
             {
-                "User-Agent": "espn-sports-api/0.4.0",
+                "User-Agent": "espn-sports-api/0.4.1",
                 "Accept": "application/json",
             }
         )
