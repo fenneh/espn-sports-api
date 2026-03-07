@@ -176,11 +176,7 @@ class Soccer(BaseSport):
         Returns:
             League table data.
         """
-        # Soccer standings use a different API path than other sports
-        url = f"https://site.api.espn.com/apis/v2/sports/soccer/{self.LEAGUE}/standings"
-        response = self.client.session.get(url, timeout=self.client.timeout)
-        response.raise_for_status()
-        return response.json()
+        return self.client.get_standings(f"soccer/{self.LEAGUE}/standings")
 
     def standings(
         self,
@@ -215,3 +211,23 @@ class Soccer(BaseSport):
             Dictionary of friendly names to ESPN codes.
         """
         return cls.LEAGUES.copy()
+
+    @classmethod
+    def list_leagues(cls, region: Optional[str] = None) -> dict[str, str]:
+        """List available league codes, optionally filtered by region.
+
+        Args:
+            region: Filter by region prefix (e.g., 'eng', 'esp', 'uefa', 'fifa').
+                   If None, returns all leagues.
+
+        Returns:
+            Dictionary of friendly names to ESPN codes.
+
+        Example:
+            >>> Soccer.list_leagues("eng")
+            {'epl': 'eng.1', 'premier_league': 'eng.1', 'championship': 'eng.2', ...}
+        """
+        if region is None:
+            return cls.LEAGUES.copy()
+        prefix = region.lower() + "."
+        return {k: v for k, v in cls.LEAGUES.items() if v.startswith(prefix)}

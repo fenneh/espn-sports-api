@@ -4,6 +4,10 @@ These tests hit the actual ESPN API to verify endpoints are working.
 If ESPN changes their API, these tests will fail.
 """
 
+import pytest
+
+pytestmark = pytest.mark.integration
+
 
 class TestNFL:
     """Tests for NFL module."""

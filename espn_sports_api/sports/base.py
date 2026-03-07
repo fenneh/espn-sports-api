@@ -6,6 +6,7 @@ from datetime import date, timedelta
 from typing import Any, Optional, Union
 
 from ..client import ESPNClient
+from ..constants import SeasonType
 
 
 class BaseSport:
@@ -40,7 +41,7 @@ class BaseSport:
         groups: Optional[int] = None,
         calendar: bool = False,
         season: Optional[int] = None,
-        seasontype: Optional[int] = None,
+        seasontype: Optional[Union[int, SeasonType]] = None,
         week: Optional[int] = None,
     ) -> dict[str, Any]:
         """Get scoreboard data.

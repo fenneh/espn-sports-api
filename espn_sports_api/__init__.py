@@ -10,6 +10,15 @@ from .constants import (
     NCAABConference,
     NCAAFConference,
     NFLDivision,
+    SeasonType,
+)
+from .exceptions import (
+    ESPNApiError,
+    ESPNNotFoundError,
+    ESPNRateLimitError,
+    ESPNResponseError,
+    ESPNServerError,
+    ESPNTimeoutError,
 )
 from .fantasy import (
     FantasyBaseball,
@@ -140,6 +149,14 @@ __all__ = [
     "NFLDivision",
     "NBAConference",
     "MLBDivision",
+    "SeasonType",
+    # Exceptions
+    "ESPNApiError",
+    "ESPNNotFoundError",
+    "ESPNRateLimitError",
+    "ESPNServerError",
+    "ESPNTimeoutError",
+    "ESPNResponseError",
     # Utilities
     "quick_scores",
 ]

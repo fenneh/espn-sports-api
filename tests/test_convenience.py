@@ -3,6 +3,7 @@
 from datetime import date
 
 import pytest
+import responses
 
 from espn_sports_api import (
     Conferences,
@@ -13,6 +14,9 @@ from espn_sports_api import (
     NFLDivision,
     quick_scores,
 )
+
+BASE = "https://site.api.espn.com/apis/site/v2/sports"
+integration = pytest.mark.integration
 
 
 class TestConferenceLookup:
@@ -70,6 +74,7 @@ class TestConferenceLookup:
         assert Conferences.list_all("unknown") == {}
 
 
+@pytest.mark.integration
 class TestConvenienceMethods:
     """Tests for date convenience methods."""
 
@@ -123,6 +128,7 @@ class TestConvenienceMethods:
         assert isinstance(response, dict)
 
 
+@pytest.mark.integration
 class TestCollegeConferenceFiltering:
     """Tests for college sports conference filtering."""
 
@@ -155,32 +161,51 @@ class TestCollegeConferenceFiltering:
 class TestQuickScores:
     """Tests for quick_scores() function."""
 
+    @pytest.mark.integration
     def test_quick_scores_nfl(self):
-        """Test quick_scores() for NFL."""
         response = quick_scores("nfl")
         assert isinstance(response, dict)
 
+    @pytest.mark.integration
     def test_quick_scores_nba(self):
-        """Test quick_scores() for NBA."""
         response = quick_scores("nba")
         assert isinstance(response, dict)
 
+    @pytest.mark.integration
     def test_quick_scores_default(self):
-        """Test quick_scores() defaults to NFL."""
         response = quick_scores()
         assert isinstance(response, dict)
 
+    @pytest.mark.integration
     def test_quick_scores_case_insensitive(self):
-        """Test quick_scores() is case insensitive."""
         response = quick_scores("NBA")
         assert isinstance(response, dict)
 
+    @pytest.mark.integration
     def test_quick_scores_mls(self):
-        """Test quick_scores() for MLS (soccer)."""
         response = quick_scores("mls")
         assert isinstance(response, dict)
 
     def test_quick_scores_unknown_raises(self):
-        """Test quick_scores() raises for unknown sport."""
         with pytest.raises(ValueError, match="Unknown sport"):
             quick_scores("unknown_sport")
+
+    @responses.activate
+    def test_quick_scores_mocked_nfl(self):
+        responses.add(
+            responses.GET,
+            f"{BASE}/football/nfl/scoreboard",
+            json={"events": []},
+        )
+        data = quick_scores("nfl")
+        assert isinstance(data, dict)
+
+    @responses.activate
+    def test_quick_scores_mocked_mls(self):
+        responses.add(
+            responses.GET,
+            f"{BASE}/soccer/usa.1/scoreboard",
+            json={"events": []},
+        )
+        data = quick_scores("mls")
+        assert isinstance(data, dict)

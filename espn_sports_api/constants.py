@@ -6,6 +6,15 @@ from enum import IntEnum
 from typing import Optional
 
 
+class SeasonType(IntEnum):
+    """Season type identifiers used across ESPN APIs."""
+
+    PRESEASON = 1
+    REGULAR = 2
+    POSTSEASON = 3
+    OFFSEASON = 4
+
+
 class NCAAFConference(IntEnum):
     """NCAA Football conference group IDs for filtering scoreboards."""
 
