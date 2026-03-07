@@ -69,8 +69,8 @@ class BaseSport:
             params["calendar"] = "true"
         if season:
             params["season"] = season
-        if seasontype:
-            params["seasontype"] = seasontype
+        if seasontype is not None:
+            params["seasontype"] = int(seasontype)
         if week:
             params["week"] = week
         return self.client.get(f"{self._endpoint()}/scoreboard", params or None)
