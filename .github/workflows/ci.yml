@@ -39,7 +39,7 @@ jobs:
         run: uv sync --dev
 
       - name: Type check with ty
-        run: uv run ty check --ignore unresolved-import
+        run: uv run ty check --ignore unresolved-import espn_sports_api/
 
   test:
     runs-on: ubuntu-latest

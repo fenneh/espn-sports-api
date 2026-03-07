@@ -211,17 +211,17 @@ class ESPNClient:
     @staticmethod
     def _raise_for_status(response: requests.Response) -> None:
         """Raise an appropriate ESPNApiError for HTTP error responses."""
-        status = response.status_code
-        msg = f"HTTP {status} for {response.url}"
+        code: int = response.status_code or 0
+        msg = f"HTTP {code} for {response.url}"
 
-        if status == 404:
+        if code == 404:
             raise ESPNNotFoundError(msg)
-        elif status == 429:
+        elif code == 429:
             raise ESPNRateLimitError(msg)
-        elif 500 <= status < 600:
-            raise ESPNServerError(msg, status_code=status)
+        elif 500 <= code < 600:
+            raise ESPNServerError(msg, status_code=code)
         else:
-            raise ESPNApiError(msg, status_code=status)
+            raise ESPNApiError(msg, status_code=code)
 
     def get(self, endpoint: str, params: Optional[dict] = None) -> dict[str, Any]:
         """Make a request to the site API.
