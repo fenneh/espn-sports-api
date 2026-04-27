@@ -10,6 +10,13 @@ from pathlib import Path
 from typing import Any, Optional
 from urllib.parse import urljoin
 
+try:
+    from importlib.metadata import version as _meta_version
+
+    _VERSION = _meta_version("espn-sports-api")
+except Exception:
+    _VERSION = "0.0.0"
+
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
@@ -130,7 +137,7 @@ class ESPNClient:
         self.session = requests.Session()
         self.session.headers.update(
             {
-                "User-Agent": "espn-sports-api/0.4.1",
+                "User-Agent": f"espn-sports-api/{_VERSION}",
                 "Accept": "application/json",
             }
         )

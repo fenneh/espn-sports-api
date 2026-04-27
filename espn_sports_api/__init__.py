@@ -95,7 +95,12 @@ def quick_scores(sport: str = "nfl") -> dict[str, Any]:
     return instance.today()
 
 
-__version__ = "0.3.1"
+try:
+    from importlib.metadata import version as _meta_version
+
+    __version__ = _meta_version("espn-sports-api")
+except Exception:
+    __version__ = "0.4.1"
 __all__ = [
     # Client
     "ESPNClient",
