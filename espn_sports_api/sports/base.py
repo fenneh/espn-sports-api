@@ -305,7 +305,7 @@ class BaseSport:
         Returns:
             Play-by-play data with drives and plays.
         """
-        return self.client.get(f"{self._endpoint()}/summary", {"event": event_id})
+        return self.event(event_id)
 
     def box_score(self, event_id: str) -> dict[str, Any]:
         """Get box score for a game.
@@ -316,7 +316,7 @@ class BaseSport:
         Returns:
             Box score with team and player statistics.
         """
-        return self.client.get(f"{self._endpoint()}/summary", {"event": event_id})
+        return self.event(event_id)
 
     def positions(self) -> dict[str, Any]:
         """Get all positions for this sport.
