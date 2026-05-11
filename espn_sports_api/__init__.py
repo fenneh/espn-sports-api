@@ -91,8 +91,7 @@ def quick_scores(sport: str = "nfl") -> dict[str, Any]:
     cls = sport_map.get(sport.lower())
     if cls is None:
         raise ValueError(f"Unknown sport: {sport}. Options: {', '.join(sport_map.keys())}")
-    instance = cls() if callable(cls) else cls()
-    return instance.today()
+    return cls().today()
 
 
 try:

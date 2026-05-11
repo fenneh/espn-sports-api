@@ -45,7 +45,6 @@ class NCAABConference(IntEnum):
     BIG_EAST = 4
     AAC = 62
     MOUNTAIN_WEST = 44
-    ATLANTIC_10 = 3
     WCC = 26
     MVC = 18
     IVY = 22
