@@ -25,20 +25,6 @@ class MLB(BaseSport):
         params = {"year": year} if year else None
         return self.client.get_core(f"{self._core_endpoint()}/draft", params)
 
-    def leaders(self, category: Optional[str] = None) -> dict[str, Any]:
-        """Get statistical leaders.
-
-        Args:
-            category: Stat category (e.g., 'batting', 'pitching').
-
-        Returns:
-            Leaders data.
-        """
-        endpoint = f"{self._core_endpoint()}/leaders"
-        if category:
-            endpoint = f"{endpoint}/{category}"
-        return self.client.get_core(endpoint)
-
     def free_agents(self) -> dict[str, Any]:
         """Get free agents.
 
