@@ -142,6 +142,12 @@ class TestNBAMethods:
         )
         assert NBA().transactions()["count"] == 5
 
+    @responses.activate
+    def test_transactions_forwards_limit(self):
+        responses.add(responses.GET, f"{CORE}/basketball/leagues/nba/transactions", json={})
+        NBA().transactions(limit=25)
+        assert "limit=25" in responses.calls[0].request.url
+
 
 class TestMLBMethods:
     @responses.activate
@@ -225,6 +231,12 @@ class TestNHLMethods:
     def test_transactions(self):
         responses.add(responses.GET, f"{CORE}/hockey/leagues/nhl/transactions", json={"count": 3})
         assert NHL().transactions()["count"] == 3
+
+    @responses.activate
+    def test_transactions_forwards_limit(self):
+        responses.add(responses.GET, f"{CORE}/hockey/leagues/nhl/transactions", json={})
+        NHL().transactions(limit=10)
+        assert "limit=10" in responses.calls[0].request.url
 
 
 class TestWNBAMethods:
