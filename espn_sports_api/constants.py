@@ -63,7 +63,7 @@ class NFLDivision(IntEnum):
     AFC_NORTH = 12
     AFC_SOUTH = 13
     AFC_WEST = 6
-    NFC_EAST = 1
+    NFC_EAST = 3
     NFC_NORTH = 10
     NFC_SOUTH = 8
     NFC_WEST = 7

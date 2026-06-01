@@ -39,6 +39,7 @@ class TestConferenceLookup:
         assert NFLDivision.AFC == 1
         assert NFLDivision.NFC == 2
         assert NFLDivision.AFC_EAST == 4
+        assert NFLDivision.NFC_EAST == 3
 
     def test_nba_conference_enum(self):
         """Test NBA conference enum values."""
@@ -68,6 +69,14 @@ class TestConferenceLookup:
         assert isinstance(ncaaf, dict)
         assert "SEC" in ncaaf
         assert ncaaf["SEC"] == 8
+
+    def test_conferences_list_all_nfl(self):
+        """Test list_all includes all NFL divisions including NFC_EAST."""
+        nfl = Conferences.list_all("nfl")
+        assert "NFC_EAST" in nfl
+        assert nfl["NFC_EAST"] == 3
+        assert "AFC" in nfl
+        assert nfl["AFC"] == 1
 
     def test_conferences_list_all_unknown(self):
         """Test Conferences.list_all() returns empty for unknown sport."""
