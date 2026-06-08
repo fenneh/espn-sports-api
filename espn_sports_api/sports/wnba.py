@@ -42,7 +42,11 @@ class WNBA(BaseSport):
     def transactions(self, limit: Optional[int] = None) -> dict[str, Any]:
         """Get transactions.
 
+        Args:
+            limit: Maximum number of results.
+
         Returns:
             Transaction data.
         """
-        return self.client.get_core(f"{self._endpoint()}/transactions")
+        params = {"limit": limit} if limit else None
+        return self.client.get_core(f"{self._endpoint()}/transactions", params)

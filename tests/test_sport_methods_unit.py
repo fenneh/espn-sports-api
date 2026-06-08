@@ -276,6 +276,12 @@ class TestWNBAMethods:
         responses.add(responses.GET, f"{CORE}/basketball/wnba/transactions", json={"count": 2})
         assert WNBA().transactions()["count"] == 2
 
+    @responses.activate
+    def test_transactions_forwards_limit(self):
+        responses.add(responses.GET, f"{CORE}/basketball/wnba/transactions", json={})
+        WNBA().transactions(limit=15)
+        assert "limit=15" in responses.calls[0].request.url
+
 
 class TestUFCMethods:
     @responses.activate
