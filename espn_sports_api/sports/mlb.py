@@ -37,9 +37,10 @@ class MLB(BaseSport):
         """Get transactions.
 
         Args:
-            limit: Max results (ignored, included for API compatibility).
+            limit: Maximum number of results.
 
         Returns:
             Transaction data.
         """
-        return self.client.get_core(f"{self._core_endpoint()}/transactions")
+        params = {"limit": limit} if limit else None
+        return self.client.get_core(f"{self._core_endpoint()}/transactions", params)

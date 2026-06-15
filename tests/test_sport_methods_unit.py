@@ -191,6 +191,12 @@ class TestMLBMethods:
         responses.add(responses.GET, f"{CORE}/baseball/leagues/mlb/transactions", json={"count": 7})
         assert MLB().transactions()["count"] == 7
 
+    @responses.activate
+    def test_transactions_forwards_limit(self):
+        responses.add(responses.GET, f"{CORE}/baseball/leagues/mlb/transactions", json={})
+        MLB().transactions(limit=25)
+        assert "limit=25" in responses.calls[0].request.url
+
 
 class TestNHLMethods:
     @responses.activate
