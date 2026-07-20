@@ -113,6 +113,16 @@ class Conferences:
     MLB = MLBDivision
 
     @classmethod
+    def _sports(cls) -> dict:
+        return {
+            "ncaaf": cls.NCAAF,
+            "ncaab": cls.NCAAB,
+            "nfl": cls.NFL,
+            "nba": cls.NBA,
+            "mlb": cls.MLB,
+        }
+
+    @classmethod
     def get(cls, sport: str, name: str) -> Optional[int]:
         """Look up a conference/division ID by name.
 
@@ -131,14 +141,7 @@ class Conferences:
             >>> Conferences.get("ncaab", "big ten")
             7
         """
-        mapping = {
-            "ncaaf": cls.NCAAF,
-            "ncaab": cls.NCAAB,
-            "nfl": cls.NFL,
-            "nba": cls.NBA,
-            "mlb": cls.MLB,
-        }
-        enum_class = mapping.get(sport.lower())
+        enum_class = cls._sports().get(sport.lower())
         if not enum_class:
             return None
 
@@ -162,14 +165,7 @@ class Conferences:
             >>> Conferences.list_all("ncaaf")
             {'FBS': 80, 'FCS': 81, 'SEC': 8, ...}
         """
-        mapping = {
-            "ncaaf": cls.NCAAF,
-            "ncaab": cls.NCAAB,
-            "nfl": cls.NFL,
-            "nba": cls.NBA,
-            "mlb": cls.MLB,
-        }
-        enum_class = mapping.get(sport.lower())
+        enum_class = cls._sports().get(sport.lower())
         if not enum_class:
             return {}
         return {member.name: member.value for member in enum_class}
