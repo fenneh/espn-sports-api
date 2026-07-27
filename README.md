@@ -62,44 +62,44 @@ All sport classes share these methods:
 
 ```python
 # Scoreboard with filtering
-sport.scoreboard(dates="20240115")       # By date
-sport.scoreboard(season=2024, week=10)   # By season/week
+sport.scoreboard(dates="20240115")  # By date
+sport.scoreboard(season=2024, week=10)  # By season/week
 sport.scoreboard(seasontype=SeasonType.POSTSEASON)  # or raw int: 1=pre, 2=reg, 3=post
 
 # Teams
-sport.teams()                  # All teams
-sport.team("NYY")              # Team details
-sport.team_roster("NYY")       # Team roster
-sport.team_schedule("NYY")     # Team schedule
-sport.team_injuries("NYY")     # Team injuries
+sport.teams()  # All teams
+sport.team("NYY")  # Team details
+sport.team_roster("NYY")  # Team roster
+sport.team_schedule("NYY")  # Team schedule
+sport.team_injuries("NYY")  # Team injuries
 
 # League-wide data
-sport.injuries()               # All injuries
-sport.transactions()           # Trades, signings, IR moves
-sport.statistics()             # League statistics
-sport.leaders()                # Statistical leaders
-sport.venues()                 # Stadium information
-sport.franchises()             # Franchise data
-sport.events()                 # All games
-sport.positions()              # All positions
+sport.injuries()  # All injuries
+sport.transactions()  # Trades, signings, IR moves
+sport.statistics()  # League statistics
+sport.leaders()  # Statistical leaders
+sport.venues()  # Stadium information
+sport.franchises()  # Franchise data
+sport.events()  # All games
+sport.positions()  # All positions
 
 # Other
-sport.standings()              # Standings
-sport.news()                   # News articles
-sport.event("401547417")       # Game details
+sport.standings()  # Standings
+sport.news()  # News articles
+sport.event("401547417")  # Game details
 sport.playbyplay("401547417")  # Play-by-play data
-sport.athlete("12345")         # Athlete profile
-sport.athlete_stats("12345")   # Athlete statistics
-sport.seasons(2024)            # Season information
+sport.athlete("12345")  # Athlete profile
+sport.athlete_stats("12345")  # Athlete statistics
+sport.seasons(2024)  # Season information
 
 # Date convenience methods
-sport.today()                  # Today's games
-sport.yesterday()              # Yesterday's games
-sport.tomorrow()               # Tomorrow's games
-sport.live()                   # In-progress games only
-sport.on_date(date(2024,12,25)) # Games on specific date
-sport.date_range(start, end)   # Games in date range
-sport.for_week(10, season=2024) # Games for specific week
+sport.today()  # Today's games
+sport.yesterday()  # Yesterday's games
+sport.tomorrow()  # Tomorrow's games
+sport.live()  # In-progress games only
+sport.on_date(date(2024, 12, 25))  # Games on specific date
+sport.date_range(start, end)  # Games in date range
+sport.for_week(10, season=2024)  # Games for specific week
 ```
 
 ## College Conference Filtering
@@ -119,9 +119,9 @@ ncaab = NCAAB()
 games = ncaab.scoreboard(conference=NCAABConference.BIG_EAST)
 
 # Lookup conference IDs
-Conferences.get("ncaaf", "SEC")          # Returns 8
-Conferences.get("ncaab", "Big Ten")      # Returns 7
-Conferences.list_all("ncaaf")            # All NCAAF conferences
+Conferences.get("ncaaf", "SEC")  # Returns 8
+Conferences.get("ncaab", "Big Ten")  # Returns 7
+Conferences.list_all("ncaaf")  # All NCAAF conferences
 ```
 
 ## Betting Odds
@@ -236,10 +236,7 @@ league = FantasyFootball(league_id=123456, season=2024)
 
 # Private league (requires cookies)
 league = FantasyFootball(
-    league_id=123456,
-    season=2024,
-    swid="{YOUR-SWID}",
-    espn_s2="YOUR_ESPN_S2_COOKIE"
+    league_id=123456, season=2024, swid="{YOUR-SWID}", espn_s2="YOUR_ESPN_S2_COOKIE"
 )
 
 teams = league.teams()
