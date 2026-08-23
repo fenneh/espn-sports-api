@@ -34,7 +34,11 @@ def pytest_runtest_makereport(item, call):
         exc = call.excinfo.value
         if isinstance(exc, ESPNApiError) and getattr(exc, "status_code", None) == 403:
             report.outcome = "skipped"
-            report.longrepr = f"Skipped: ESPN blocked this runner (403): {exc}"
+            report.longrepr = (
+                str(item.fspath),
+                item.location[1],
+                f"Skipped: ESPN blocked this runner (403): {exc}",
+            )
 
 
 @pytest.fixture
