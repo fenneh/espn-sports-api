@@ -2,6 +2,8 @@
 
 import time
 
+import responses
+
 from espn_sports_api import Cache, ESPNClient
 
 
@@ -120,41 +122,49 @@ class TestESPNClientCaching:
 
 
 class TestCachingIntegration:
-    """Integration tests for caching with real API calls."""
+    """Integration tests for caching, with the HTTP layer mocked."""
 
-    def test_cached_request_faster(self):
-        """Test that cached requests are faster than uncached."""
+    @responses.activate
+    def test_cached_request_skips_second_http_call(self):
+        """Test that a cached request doesn't hit the API again."""
+        responses.add(
+            responses.GET,
+            "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams",
+            json={"teams": []},
+            status=200,
+        )
         client = ESPNClient(cache_ttl=60)
 
-        # First request - should hit API
-        start = time.time()
         response1 = client.get("football/nfl/teams")
-        first_time = time.time() - start
-
-        # Second request - should be cached
-        start = time.time()
         response2 = client.get("football/nfl/teams")
-        second_time = time.time() - start
 
-        # Cached should be significantly faster
-        assert second_time < first_time / 2
         assert response1 == response2
+        assert len(responses.calls) == 1
 
         client.close()
 
+    @responses.activate
     def test_different_params_not_cached(self):
         """Test that different params create separate cache entries."""
+        responses.add(
+            responses.GET,
+            "https://site.api.espn.com/apis/site/v2/sports/football/nfl/news",
+            json={"articles": [1]},
+            status=200,
+        )
+        responses.add(
+            responses.GET,
+            "https://site.api.espn.com/apis/site/v2/sports/football/nfl/news",
+            json={"articles": [1, 2]},
+            status=200,
+        )
         client = ESPNClient(cache_ttl=60)
 
-        # Request with limit=1
         response1 = client.get("football/nfl/news", {"limit": 1})
-
-        # Request with limit=2 - should not use cache
         response2 = client.get("football/nfl/news", {"limit": 2})
 
-        # They may have different content
-        # At minimum, they should both be valid responses
-        assert "articles" in response1 or "header" in response1
-        assert "articles" in response2 or "header" in response2
+        assert response1["articles"] == [1]
+        assert response2["articles"] == [1, 2]
+        assert len(responses.calls) == 2
 
         client.close()
