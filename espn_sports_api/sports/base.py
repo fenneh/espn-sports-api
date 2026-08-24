@@ -460,3 +460,39 @@ class BaseSport:
 
     def __exit__(self, *args) -> None:
         self.close()
+
+
+class DraftTransactionsMixin(BaseSport):
+    """Shared draft/free-agent/transaction endpoints for the core `/leagues/` API."""
+
+    def draft(self, year: Optional[int] = None) -> dict[str, Any]:
+        """Get league draft data.
+
+        Args:
+            year: Draft year.
+
+        Returns:
+            Draft data.
+        """
+        params = {"year": year} if year else None
+        return self.client.get_core(f"{self._core_endpoint()}/draft", params)
+
+    def free_agents(self) -> dict[str, Any]:
+        """Get free agents.
+
+        Returns:
+            Free agent data.
+        """
+        return self.client.get_core(f"{self._core_endpoint()}/freeagents")
+
+    def transactions(self, limit: Optional[int] = None) -> dict[str, Any]:
+        """Get transactions.
+
+        Args:
+            limit: Maximum number of results.
+
+        Returns:
+            Transaction data.
+        """
+        params = {"limit": limit} if limit else None
+        return self.client.get_core(f"{self._core_endpoint()}/transactions", params)
