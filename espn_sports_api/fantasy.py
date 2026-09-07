@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from .client import ESPNClient
 
@@ -15,9 +15,9 @@ class FantasyLeague:
         sport: str,
         league_id: int,
         season: int,
-        swid: Optional[str] = None,
-        espn_s2: Optional[str] = None,
-        client: Optional[ESPNClient] = None,
+        swid: str | None = None,
+        espn_s2: str | None = None,
+        client: ESPNClient | None = None,
     ):
         """Initialize fantasy league access.
 
@@ -74,7 +74,7 @@ class FantasyLeague:
             {"view": "mRoster", "forTeamId": team_id},
         )
 
-    def matchups(self, week: Optional[int] = None) -> dict[str, Any]:
+    def matchups(self, week: int | None = None) -> dict[str, Any]:
         """Get matchups.
 
         Args:
@@ -96,7 +96,7 @@ class FantasyLeague:
         """
         return self.client.get_fantasy(self._endpoint(), {"view": "mStandings"})
 
-    def free_agents(self, position: Optional[str] = None) -> dict[str, Any]:
+    def free_agents(self, position: str | None = None) -> dict[str, Any]:
         """Get available free agents.
 
         Args:

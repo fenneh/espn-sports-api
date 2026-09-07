@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -45,16 +45,16 @@ class GameOdds:
     event_id: str
     home_team: str
     away_team: str
-    spread: Optional[Spread] = None
-    moneyline: Optional[Moneyline] = None
-    total: Optional[Total] = None
+    spread: Spread | None = None
+    moneyline: Moneyline | None = None
+    total: Total | None = None
 
 
 class Odds:
     """Extract betting data from ESPN API responses."""
 
     @staticmethod
-    def from_event(event: dict[str, Any]) -> Optional[GameOdds]:
+    def from_event(event: dict[str, Any]) -> GameOdds | None:
         """Extract odds from an event/game.
 
         Args:

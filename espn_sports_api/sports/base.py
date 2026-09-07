@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import date, timedelta
-from typing import Any, Optional, Union
+from typing import Any
 
 from ..client import ESPNClient
 from ..constants import SeasonType
@@ -15,7 +15,7 @@ class BaseSport:
     SPORT: str = ""
     LEAGUE: str = ""
 
-    def __init__(self, client: Optional[ESPNClient] = None):
+    def __init__(self, client: ESPNClient | None = None):
         """Initialize sport module.
 
         Args:
@@ -36,13 +36,13 @@ class BaseSport:
 
     def scoreboard(
         self,
-        dates: Optional[str] = None,
-        limit: Optional[int] = None,
-        groups: Optional[int] = None,
+        dates: str | None = None,
+        limit: int | None = None,
+        groups: int | None = None,
         calendar: bool = False,
-        season: Optional[int] = None,
-        seasontype: Optional[Union[int, SeasonType]] = None,
-        week: Optional[int] = None,
+        season: int | None = None,
+        seasontype: int | SeasonType | None = None,
+        week: int | None = None,
     ) -> dict[str, Any]:
         """Get scoreboard data.
 
@@ -75,7 +75,7 @@ class BaseSport:
             params["week"] = week
         return self.client.get(f"{self._endpoint()}/scoreboard", params or None)
 
-    def news(self, limit: Optional[int] = None) -> dict[str, Any]:
+    def news(self, limit: int | None = None) -> dict[str, Any]:
         """Get news articles.
 
         Args:
@@ -117,7 +117,7 @@ class BaseSport:
         """
         return self.client.get(f"{self._endpoint()}/teams/{team_id}/roster")
 
-    def team_schedule(self, team_id: str, season: Optional[int] = None) -> dict[str, Any]:
+    def team_schedule(self, team_id: str, season: int | None = None) -> dict[str, Any]:
         """Get team schedule.
 
         Args:
@@ -132,8 +132,8 @@ class BaseSport:
 
     def standings(
         self,
-        season: Optional[int] = None,
-        group: Optional[str] = None,
+        season: int | None = None,
+        group: str | None = None,
     ) -> dict[str, Any]:
         """Get standings.
 
@@ -162,7 +162,7 @@ class BaseSport:
         """
         return self.client.get(f"{self._endpoint()}/summary", {"event": event_id})
 
-    def athletes(self, limit: Optional[int] = None) -> dict[str, Any]:
+    def athletes(self, limit: int | None = None) -> dict[str, Any]:
         """Get athletes.
 
         Args:
@@ -207,7 +207,7 @@ class BaseSport:
         """
         return self.client.get_core(f"{self._core_endpoint()}/teams/{team_id}/injuries")
 
-    def seasons(self, year: Optional[int] = None) -> dict[str, Any]:
+    def seasons(self, year: int | None = None) -> dict[str, Any]:
         """Get season information.
 
         Args:
@@ -229,7 +229,7 @@ class BaseSport:
         """
         return self.client.get(f"{self._endpoint()}/injuries")
 
-    def transactions(self, limit: Optional[int] = None) -> dict[str, Any]:
+    def transactions(self, limit: int | None = None) -> dict[str, Any]:
         """Get recent transactions (trades, signings, IR moves).
 
         Args:
@@ -241,7 +241,7 @@ class BaseSport:
         params = {"limit": limit} if limit else None
         return self.client.get(f"{self._endpoint()}/transactions", params)
 
-    def statistics(self, category: Optional[str] = None) -> dict[str, Any]:
+    def statistics(self, category: str | None = None) -> dict[str, Any]:
         """Get league statistics and leaders.
 
         Args:
@@ -255,7 +255,7 @@ class BaseSport:
             endpoint = f"{endpoint}/{category}"
         return self.client.get(endpoint)
 
-    def venues(self, limit: Optional[int] = None) -> dict[str, Any]:
+    def venues(self, limit: int | None = None) -> dict[str, Any]:
         """Get stadium/venue information.
 
         Args:
@@ -277,8 +277,8 @@ class BaseSport:
 
     def events(
         self,
-        dates: Optional[str] = None,
-        limit: Optional[int] = None,
+        dates: str | None = None,
+        limit: int | None = None,
     ) -> dict[str, Any]:
         """Get all events/games.
 
@@ -326,7 +326,7 @@ class BaseSport:
         """
         return self.client.get_core(f"{self._core_endpoint()}/positions")
 
-    def leaders(self, category: Optional[str] = None) -> dict[str, Any]:
+    def leaders(self, category: str | None = None) -> dict[str, Any]:
         """Get statistical leaders.
 
         Args:
@@ -376,7 +376,7 @@ class BaseSport:
         d = date.today() + timedelta(days=1)
         return self.scoreboard(dates=d.strftime("%Y%m%d"))
 
-    def on_date(self, d: Union[date, str]) -> dict[str, Any]:
+    def on_date(self, d: date | str) -> dict[str, Any]:
         """Get games for a specific date.
 
         Args:
@@ -395,7 +395,7 @@ class BaseSport:
             d = d.strftime("%Y%m%d")
         return self.scoreboard(dates=d)
 
-    def date_range(self, start: Union[date, str], end: Union[date, str]) -> dict[str, Any]:
+    def date_range(self, start: date | str, end: date | str) -> dict[str, Any]:
         """Get games within a date range.
 
         Args:
@@ -434,7 +434,7 @@ class BaseSport:
         ]
         return {**data, "events": live_events}
 
-    def for_week(self, week_num: int, season: Optional[int] = None) -> dict[str, Any]:
+    def for_week(self, week_num: int, season: int | None = None) -> dict[str, Any]:
         """Get games for a specific week (for weekly sports like NFL/NCAAF).
 
         Args:
@@ -465,7 +465,7 @@ class BaseSport:
 class DraftTransactionsMixin(BaseSport):
     """Shared draft/free-agent/transaction endpoints for the core `/leagues/` API."""
 
-    def draft(self, year: Optional[int] = None) -> dict[str, Any]:
+    def draft(self, year: int | None = None) -> dict[str, Any]:
         """Get league draft data.
 
         Args:
@@ -485,7 +485,7 @@ class DraftTransactionsMixin(BaseSport):
         """
         return self.client.get_core(f"{self._core_endpoint()}/freeagents")
 
-    def transactions(self, limit: Optional[int] = None) -> dict[str, Any]:
+    def transactions(self, limit: int | None = None) -> dict[str, Any]:
         """Get transactions.
 
         Args:

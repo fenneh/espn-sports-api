@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from .base import BaseSport
 
@@ -13,7 +13,7 @@ class NFL(BaseSport):
     SPORT = "football"
     LEAGUE = "nfl"
 
-    def draft(self, year: Optional[int] = None) -> dict[str, Any]:
+    def draft(self, year: int | None = None) -> dict[str, Any]:
         """Get NFL draft data.
 
         Args:

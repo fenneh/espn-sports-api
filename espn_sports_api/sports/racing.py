@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from .base import BaseSport
 
@@ -31,7 +31,7 @@ class Racing(BaseSport):
         super().__init__(client)
         self.LEAGUE = self.SERIES.get(series.lower(), series)
 
-    def schedule(self, season: Optional[int] = None) -> dict[str, Any]:
+    def schedule(self, season: int | None = None) -> dict[str, Any]:
         """Get race calendar.
 
         Args:
@@ -45,8 +45,8 @@ class Racing(BaseSport):
 
     def standings(
         self,
-        season: Optional[int] = None,
-        group: Optional[str] = None,
+        season: int | None = None,
+        group: str | None = None,
     ) -> dict[str, Any]:
         """Get driver/constructor standings.
 

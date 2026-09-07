@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from enum import IntEnum
-from typing import Optional
 
 
 class SeasonType(IntEnum):
@@ -123,7 +122,7 @@ class Conferences:
         }
 
     @classmethod
-    def get(cls, sport: str, name: str) -> Optional[int]:
+    def get(cls, sport: str, name: str) -> int | None:
         """Look up a conference/division ID by name.
 
         Args:

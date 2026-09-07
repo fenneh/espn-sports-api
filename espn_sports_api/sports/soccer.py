@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from .base import BaseSport
 
@@ -133,7 +133,7 @@ class Soccer(BaseSport):
     def team_schedule(
         self,
         team_id: str,
-        season: Optional[int] = None,
+        season: int | None = None,
         fixtures: bool = False,
     ) -> dict[str, Any]:
         """Get team schedule.
@@ -155,7 +155,7 @@ class Soccer(BaseSport):
         return self.client.get(f"soccer/all/teams/{team_id}/schedule", params or None)
 
     @staticmethod
-    def all_leagues_scoreboard(dates: Optional[str] = None) -> dict[str, Any]:
+    def all_leagues_scoreboard(dates: str | None = None) -> dict[str, Any]:
         """Get scoreboard across all leagues.
 
         Args:
@@ -180,8 +180,8 @@ class Soccer(BaseSport):
 
     def standings(
         self,
-        season: Optional[int] = None,
-        group: Optional[str] = None,
+        season: int | None = None,
+        group: str | None = None,
     ) -> dict[str, Any]:
         """Get league standings/table.
 
@@ -213,7 +213,7 @@ class Soccer(BaseSport):
         return cls.LEAGUES.copy()
 
     @classmethod
-    def list_leagues(cls, region: Optional[str] = None) -> dict[str, str]:
+    def list_leagues(cls, region: str | None = None) -> dict[str, str]:
         """List available league codes, optionally filtered by region.
 
         Args:

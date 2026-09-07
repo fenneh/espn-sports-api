@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from .base import BaseSport
 
@@ -13,7 +13,7 @@ class UFC(BaseSport):
     SPORT = "mma"
     LEAGUE = "ufc"
 
-    def rankings(self, division: Optional[str] = None) -> dict[str, Any]:
+    def rankings(self, division: str | None = None) -> dict[str, Any]:
         """Get UFC rankings.
 
         Args:
@@ -29,8 +29,8 @@ class UFC(BaseSport):
 
     def events(
         self,
-        dates: Optional[str] = None,
-        limit: Optional[int] = None,
+        dates: str | None = None,
+        limit: int | None = None,
     ) -> dict[str, Any]:
         """Get upcoming UFC events.
 

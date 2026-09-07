@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -15,7 +15,7 @@ class Venue:
     city: str
     state: str
     country: str
-    capacity: Optional[int] = None
+    capacity: int | None = None
     indoor: bool = False
     grass: bool = True
 
@@ -69,8 +69,8 @@ class Weather:
 
     temperature: int
     conditions: str
-    high_temp: Optional[int] = None
-    low_temp: Optional[int] = None
+    high_temp: int | None = None
+    low_temp: int | None = None
 
     def __str__(self) -> str:
         return f"{self.temperature}°F, {self.conditions}"
@@ -98,7 +98,7 @@ class Injury:
     injury_type: str
     body_part: str
     description: str
-    return_date: Optional[str] = None
+    return_date: str | None = None
 
     def __str__(self) -> str:
         injury = self.injury_type or self.body_part
@@ -131,7 +131,7 @@ class Transaction:
     transaction_type: str
     description: str
     team: str
-    athlete_name: Optional[str] = None
+    athlete_name: str | None = None
 
     def __str__(self) -> str:
         player = f"{self.athlete_name} - " if self.athlete_name else ""
@@ -158,16 +158,16 @@ class Athlete:
     name: str
     first_name: str
     last_name: str
-    jersey: Optional[str] = None
-    position: Optional[str] = None
-    team: Optional[str] = None
-    height: Optional[str] = None
-    weight: Optional[int] = None
-    age: Optional[int] = None
-    college: Optional[str] = None
-    birthplace: Optional[str] = None
-    experience: Optional[int] = None
-    headshot_url: Optional[str] = None
+    jersey: str | None = None
+    position: str | None = None
+    team: str | None = None
+    height: str | None = None
+    weight: int | None = None
+    age: int | None = None
+    college: str | None = None
+    birthplace: str | None = None
+    experience: int | None = None
+    headshot_url: str | None = None
 
     def __str__(self) -> str:
         jersey = f"#{self.jersey} " if self.jersey else ""
@@ -224,7 +224,7 @@ class Team:
     nickname: str
     color: str
     alternate_color: str
-    logo_url: Optional[str] = None
+    logo_url: str | None = None
     record: str = ""
     standing: str = ""
 

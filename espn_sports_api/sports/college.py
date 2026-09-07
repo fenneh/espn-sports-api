@@ -3,16 +3,16 @@
 from __future__ import annotations
 
 from enum import IntEnum
-from typing import Any, Optional, Union
+from typing import Any
 
 from ..constants import Conferences, NCAABConference, NCAAFConference
 from .base import BaseSport
 
 
 def _resolve_conference(
-    conference: Union[str, IntEnum, int, None],
+    conference: str | IntEnum | int | None,
     sport: str,
-) -> Optional[int]:
+) -> int | None:
     """Resolve a conference parameter to its integer group ID.
 
     Args:
@@ -39,14 +39,14 @@ class NCAAF(BaseSport):
 
     def scoreboard(
         self,
-        dates: Optional[str] = None,
-        limit: Optional[int] = None,
-        groups: Optional[int] = None,
+        dates: str | None = None,
+        limit: int | None = None,
+        groups: int | None = None,
         calendar: bool = False,
-        season: Optional[int] = None,
-        seasontype: Optional[int] = None,
-        week: Optional[int] = None,
-        conference: Optional[Union[str, NCAAFConference, int]] = None,
+        season: int | None = None,
+        seasontype: int | None = None,
+        week: int | None = None,
+        conference: str | NCAAFConference | int | None = None,
     ) -> dict[str, Any]:
         """Get scoreboard with optional conference filter.
 
@@ -97,7 +97,7 @@ class NCAAF(BaseSport):
         """
         return self.client.get_core(f"{self._core_endpoint()}/groups")
 
-    def recruiting(self, year: Optional[int] = None) -> dict[str, Any]:
+    def recruiting(self, year: int | None = None) -> dict[str, Any]:
         """Get recruiting data.
 
         Args:
@@ -118,14 +118,14 @@ class NCAAB(BaseSport):
 
     def scoreboard(
         self,
-        dates: Optional[str] = None,
-        limit: Optional[int] = None,
-        groups: Optional[int] = None,
+        dates: str | None = None,
+        limit: int | None = None,
+        groups: int | None = None,
         calendar: bool = False,
-        season: Optional[int] = None,
-        seasontype: Optional[int] = None,
-        week: Optional[int] = None,
-        conference: Optional[Union[str, NCAABConference, int]] = None,
+        season: int | None = None,
+        seasontype: int | None = None,
+        week: int | None = None,
+        conference: str | NCAABConference | int | None = None,
     ) -> dict[str, Any]:
         """Get scoreboard with optional conference filter.
 
@@ -176,7 +176,7 @@ class NCAAB(BaseSport):
         """
         return self.client.get_core(f"{self._core_endpoint()}/groups")
 
-    def bracket(self, season: Optional[int] = None) -> dict[str, Any]:
+    def bracket(self, season: int | None = None) -> dict[str, Any]:
         """Get NCAA tournament bracket.
 
         Args:
@@ -217,7 +217,7 @@ class WomensNCAAB(BaseSport):
         """
         return self.client.get(f"{self._endpoint()}/rankings")
 
-    def bracket(self, season: Optional[int] = None) -> dict[str, Any]:
+    def bracket(self, season: int | None = None) -> dict[str, Any]:
         """Get NCAA tournament bracket.
 
         Args:

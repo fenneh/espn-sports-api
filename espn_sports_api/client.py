@@ -7,7 +7,7 @@ import json
 import logging
 import time
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 from urllib.parse import urljoin
 
 import requests
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 class Cache:
     """Simple cache for API responses."""
 
-    def __init__(self, ttl: int = 300, cache_dir: Optional[Path] = None):
+    def __init__(self, ttl: int = 300, cache_dir: Path | None = None):
         """Initialize cache.
 
         Args:
@@ -43,12 +43,12 @@ class Cache:
         if cache_dir:
             cache_dir.mkdir(parents=True, exist_ok=True)
 
-    def _key(self, url: str, params: Optional[dict]) -> str:
+    def _key(self, url: str, params: dict | None) -> str:
         """Generate cache key from URL and params."""
         key_data = f"{url}:{json.dumps(params, sort_keys=True) if params else ''}"
         return hashlib.md5(key_data.encode()).hexdigest()
 
-    def get(self, url: str, params: Optional[dict] = None) -> Optional[Any]:
+    def get(self, url: str, params: dict | None = None) -> Any | None:
         """Get cached response if valid."""
         key = self._key(url, params)
         now = time.time()
@@ -79,7 +79,7 @@ class Cache:
         logger.debug("Cache miss: %s", url)
         return None
 
-    def set(self, url: str, params: Optional[dict], data: Any) -> None:
+    def set(self, url: str, params: dict | None, data: Any) -> None:
         """Store response in cache."""
         key = self._key(url, params)
         now = time.time()
@@ -114,8 +114,8 @@ class ESPNClient:
     def __init__(
         self,
         timeout: int = 30,
-        cache_ttl: Optional[int] = None,
-        cache_dir: Optional[Path] = None,
+        cache_ttl: int | None = None,
+        cache_dir: Path | None = None,
         retries: int = 3,
     ):
         """Initialize the ESPN client.
@@ -142,7 +142,7 @@ class ESPNClient:
             self.session.mount("http://", adapter)
 
         # Initialize cache if TTL is provided
-        self._cache: Optional[Cache] = None
+        self._cache: Cache | None = None
         if cache_ttl is not None:
             self._cache = Cache(ttl=cache_ttl, cache_dir=cache_dir)
 
@@ -150,7 +150,7 @@ class ESPNClient:
         self,
         base_url: str,
         endpoint: str,
-        params: Optional[dict] = None,
+        params: dict | None = None,
         use_cache: bool = True,
     ) -> dict[str, Any]:
         """Make an API request.
@@ -218,7 +218,7 @@ class ESPNClient:
         else:
             raise ESPNApiError(msg, status_code=code)
 
-    def get(self, endpoint: str, params: Optional[dict] = None) -> dict[str, Any]:
+    def get(self, endpoint: str, params: dict | None = None) -> dict[str, Any]:
         """Make a request to the site API.
 
         Args:
@@ -230,7 +230,7 @@ class ESPNClient:
         """
         return self._request(self.BASE_URL, endpoint, params)
 
-    def get_core(self, endpoint: str, params: Optional[dict] = None) -> dict[str, Any]:
+    def get_core(self, endpoint: str, params: dict | None = None) -> dict[str, Any]:
         """Make a request to the core API.
 
         Args:
@@ -242,7 +242,7 @@ class ESPNClient:
         """
         return self._request(self.CORE_URL, endpoint, params)
 
-    def get_now(self, endpoint: str, params: Optional[dict] = None) -> dict[str, Any]:
+    def get_now(self, endpoint: str, params: dict | None = None) -> dict[str, Any]:
         """Make a request to the now API.
 
         Args:
@@ -254,7 +254,7 @@ class ESPNClient:
         """
         return self._request(self.NOW_URL, endpoint, params)
 
-    def get_fantasy(self, endpoint: str, params: Optional[dict] = None) -> dict[str, Any]:
+    def get_fantasy(self, endpoint: str, params: dict | None = None) -> dict[str, Any]:
         """Make a request to the fantasy API.
 
         Args:
@@ -266,7 +266,7 @@ class ESPNClient:
         """
         return self._request(self.FANTASY_URL, endpoint, params)
 
-    def get_web(self, endpoint: str, params: Optional[dict] = None) -> dict[str, Any]:
+    def get_web(self, endpoint: str, params: dict | None = None) -> dict[str, Any]:
         """Make a request to the web API (athlete stats).
 
         Args:
@@ -278,7 +278,7 @@ class ESPNClient:
         """
         return self._request(self.WEB_URL, endpoint, params)
 
-    def get_gambit(self, endpoint: str, params: Optional[dict] = None) -> dict[str, Any]:
+    def get_gambit(self, endpoint: str, params: dict | None = None) -> dict[str, Any]:
         """Make a request to the gambit API (pick'em challenges).
 
         Args:
@@ -290,7 +290,7 @@ class ESPNClient:
         """
         return self._request(self.GAMBIT_URL, endpoint, params)
 
-    def get_standings(self, endpoint: str, params: Optional[dict] = None) -> dict[str, Any]:
+    def get_standings(self, endpoint: str, params: dict | None = None) -> dict[str, Any]:
         """Make a request to the standings API (v2 sports endpoint).
 
         Args:
