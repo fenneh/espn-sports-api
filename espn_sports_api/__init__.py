@@ -99,7 +99,7 @@ try:
 
     __version__ = _meta_version("espn-sports-api")
 except Exception:
-    __version__ = "0.4.1"
+    __version__ = "0.4.2"
 __all__ = [
     # Client
     "ESPNClient",
