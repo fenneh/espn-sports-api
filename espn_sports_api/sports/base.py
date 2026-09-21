@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from ..client import ESPNClient
@@ -398,23 +398,34 @@ class BaseSport:
     def date_range(self, start: date | str, end: date | str) -> dict[str, Any]:
         """Get games within a date range.
 
+        Fetches one day at a time and merges the events, since ESPN's
+        scoreboard endpoint no longer accepts a `YYYYMMDD-YYYYMMDD` range.
+
         Args:
             start: Start date (inclusive).
             end: End date (inclusive).
 
         Returns:
-            Scoreboard data for the date range.
+            Scoreboard data for the date range, with events from every day merged.
 
         Example:
             >>> from datetime import date
             >>> nfl = NFL()
             >>> games = nfl.date_range(date(2024, 12, 20), date(2024, 12, 31))
         """
-        if isinstance(start, date):
-            start = start.strftime("%Y%m%d")
-        if isinstance(end, date):
-            end = end.strftime("%Y%m%d")
-        return self.scoreboard(dates=f"{start}-{end}")
+        if isinstance(start, str):
+            start = datetime.strptime(start, "%Y%m%d").date()
+        if isinstance(end, str):
+            end = datetime.strptime(end, "%Y%m%d").date()
+
+        data: dict[str, Any] = {}
+        events: list[Any] = []
+        d = start
+        while d <= end:
+            data = self.on_date(d)
+            events.extend(data.get("events", []))
+            d += timedelta(days=1)
+        return {**data, "events": events}
 
     def live(self) -> dict[str, Any]:
         """Get currently live/in-progress games.

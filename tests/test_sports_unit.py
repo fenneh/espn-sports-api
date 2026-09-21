@@ -144,15 +144,25 @@ class TestBaseSportMethods:
     def test_date_range(self):
         from datetime import date
 
-        responses.add(responses.GET, f"{BASE}/football/nfl/scoreboard", json={"events": []})
-        NFL().date_range(date(2024, 12, 1), date(2024, 12, 7))
-        assert "dates=20241201-20241207" in responses.calls[0].request.url
+        responses.add(
+            responses.GET, f"{BASE}/football/nfl/scoreboard", json={"events": [{"id": "1"}]}
+        )
+        data = NFL().date_range(date(2024, 12, 1), date(2024, 12, 3))
+        assert [c.request.url for c in responses.calls] == [
+            f"{BASE}/football/nfl/scoreboard?dates=20241201",
+            f"{BASE}/football/nfl/scoreboard?dates=20241202",
+            f"{BASE}/football/nfl/scoreboard?dates=20241203",
+        ]
+        assert len(data["events"]) == 3
 
     @responses.activate
     def test_date_range_strings(self):
-        responses.add(responses.GET, f"{BASE}/football/nfl/scoreboard", json={"events": []})
-        NFL().date_range("20241201", "20241207")
-        assert "dates=20241201-20241207" in responses.calls[0].request.url
+        responses.add(
+            responses.GET, f"{BASE}/football/nfl/scoreboard", json={"events": [{"id": "1"}]}
+        )
+        data = NFL().date_range("20241201", "20241203")
+        assert len(responses.calls) == 3
+        assert len(data["events"]) == 3
 
     @responses.activate
     def test_live_filters_in_progress(self):
