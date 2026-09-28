@@ -102,6 +102,23 @@ sport.date_range(start, end)  # Games in date range
 sport.for_week(10, season=2024)  # Games for specific week
 ```
 
+## Soccer fixtures
+
+```python
+from datetime import date
+from espn_sports_api import Soccer
+
+epl = Soccer(league="epl")
+matches = epl.on_date(date(2026, 10, 10))
+weekend = epl.date_range(date(2026, 10, 10), date(2026, 10, 12))
+arsenal = epl.team_schedule("359", fixtures=True)
+```
+
+Scoreboard events include kick-off dates, match status, scores and goal details.
+If ESPN blocks a soccer scoreboard request with HTTP 403, the client retries
+through ESPN's CDN and returns the same scoreboard structure. Other HTTP errors
+are raised normally. Failed requests are not cached as empty match days.
+
 ## College Conference Filtering
 
 Filter college sports by conference:

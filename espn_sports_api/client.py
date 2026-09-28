@@ -6,6 +6,7 @@ import hashlib
 import json
 import logging
 import time
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin
@@ -104,6 +105,7 @@ class ESPNClient:
     """Base client for ESPN API requests."""
 
     BASE_URL = "https://site.api.espn.com/apis/site/v2/sports/"
+    CDN_URL = "https://cdn.espn.com/core/"
     CORE_URL = "https://sports.core.api.espn.com/v2/sports/"
     WEB_URL = "https://site.web.api.espn.com/apis/common/v3/sports/"
     NOW_URL = "https://now.core.api.espn.com/v1/"
@@ -228,7 +230,51 @@ class ESPNClient:
         Returns:
             JSON response.
         """
-        return self._request(self.BASE_URL, endpoint, params)
+        try:
+            return self._request(self.BASE_URL, endpoint, params)
+        except ESPNApiError as error:
+            parts = endpoint.strip("/").split("/")
+            if (
+                error.status_code != 403
+                or len(parts) != 3
+                or parts[0] != "soccer"
+                or parts[2] != "scoreboard"
+            ):
+                raise
+            logger.info("Soccer scoreboard blocked; using ESPN CDN for %s", parts[1])
+            data = self._soccer_scoreboard(parts[1], params or {})
+            if self._cache:
+                self._cache.set(urljoin(self.BASE_URL, endpoint), params, data)
+            return data
+
+    def _soccer_scoreboard(self, league: str, params: dict) -> dict[str, Any]:
+        dates = params.get("dates", "")
+        if "-" in dates:
+            start, end = dates.split("-", 1)
+            current = datetime.strptime(start, "%Y%m%d").date()
+            last = datetime.strptime(end, "%Y%m%d").date()
+            data: dict[str, Any] = {}
+            events: list[Any] = []
+            while current <= last:
+                data = self._soccer_scoreboard(
+                    league, {**params, "dates": current.strftime("%Y%m%d")}
+                )
+                events.extend(data["events"])
+                current += timedelta(days=1)
+            return {**data, "events": events}
+
+        query = {key: value for key, value in params.items() if key != "dates"}
+        query.update({"xhr": "1", "league": league})
+        if dates:
+            query["date"] = dates
+        response = self._request(self.CDN_URL, "soccer/scoreboard", query)
+        try:
+            data = response["content"]["sbData"]
+            if not isinstance(data, dict) or not isinstance(data["events"], list):
+                raise TypeError
+        except (KeyError, TypeError) as error:
+            raise ESPNResponseError("Invalid ESPN CDN soccer scoreboard response") from error
+        return data
 
     def get_core(self, endpoint: str, params: dict | None = None) -> dict[str, Any]:
         """Make a request to the core API.

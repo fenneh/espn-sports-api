@@ -11,6 +11,6 @@ def test_version_falls_back_when_package_not_installed():
     try:
         with patch("importlib.metadata.version", side_effect=PackageNotFoundError):
             importlib.reload(espn_sports_api)
-        assert espn_sports_api.__version__ == "0.4.2"
+        assert espn_sports_api.__version__ == "0.4.3"
     finally:
         importlib.reload(espn_sports_api)
